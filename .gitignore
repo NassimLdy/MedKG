@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Large generated data files — not tracked in git (samples are in data/samples/)
+data/crawler_output.jsonl
+data/extracted_knowledge.csv
+data/candidate_triples.csv
+
+# Large KG artifact — not tracked (too large; regenerate with src/kg/expand_kb.py)
+kg_artifacts/medical_kb_expanded.nt
+
+# Trained model weights and results
+results/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/

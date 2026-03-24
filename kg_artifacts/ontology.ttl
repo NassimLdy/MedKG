@@ -1,0 +1,132 @@
+# ==============================================================================
+# Medical Knowledge Graph Ontology
+# File: ontology.ttl
+# Description: OWL/Turtle ontology defining classes, properties, and alignments
+#              for the medical domain Knowledge Base.
+# Author: MedKG Project
+# Date: 2026-03-24
+# ==============================================================================
+
+@base <http://medkg.local/> .
+
+# --- Namespace Prefixes -------------------------------------------------------
+@prefix med:  <http://medkg.local/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix wdt:  <http://www.wikidata.org/prop/direct/> .
+@prefix wd:   <http://www.wikidata.org/entity/> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+# ==============================================================================
+# Ontology Metadata
+# ==============================================================================
+
+<http://medkg.local/>
+    a owl:Ontology ;
+    rdfs:label "Medical Knowledge Graph Ontology"@en ;
+    rdfs:comment "An OWL ontology for a medical knowledge base covering diseases, symptoms, treatments, medications, and medical specialties. Constructed from Wikipedia-derived data and aligned to Wikidata."@en ;
+    dct:title "MedKG Ontology"@en ;
+    dct:description "This ontology defines the conceptual schema for the Medical Knowledge Graph (MedKG). It provides class definitions for medical entities, object property definitions for relationships between them, and equivalence alignments to Wikidata predicates to enable federated querying and knowledge expansion."@en ;
+    dct:created "2026-03-24"^^xsd:date ;
+    dct:creator "MedKG Project (Educational)" ;
+    owl:versionInfo "1.0.0" .
+
+# ==============================================================================
+# Class Definitions
+# All medical entity classes are subclasses of owl:Thing.
+# ==============================================================================
+
+# --- Disease ------------------------------------------------------------------
+med:Disease
+    a owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Disease"@en ;
+    rdfs:comment "A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms or that affects a specific location. Examples: Diabetes, Hypertension, COVID-19."@en .
+
+# --- Symptom ------------------------------------------------------------------
+med:Symptom
+    a owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Symptom"@en ;
+    rdfs:comment "A physical or mental feature which is regarded as indicating a condition of disease, particularly such a feature that is apparent to the patient. Examples: polydipsia, polyuria, fatigue, blurred vision."@en .
+
+# --- Treatment ----------------------------------------------------------------
+med:Treatment
+    a owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Treatment"@en ;
+    rdfs:comment "A medical procedure or course of action intended to remedy or manage a disease or condition. Examples: dialysis, amputation, insulin replacement therapy, surgery."@en .
+
+# --- Medication ---------------------------------------------------------------
+med:Medication
+    a owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Medication"@en ;
+    rdfs:comment "A drug or other preparation for the treatment or prevention of disease. Examples: insulin, metformin, sitagliptin, aspirin."@en .
+
+# --- MedicalSpecialty ---------------------------------------------------------
+med:MedicalSpecialty
+    a owl:Class ;
+    rdfs:subClassOf owl:Thing ;
+    rdfs:label "Medical Specialty"@en ;
+    rdfs:comment "A branch of medical science in which a physician specializes. Examples: ophthalmologist, endocrinologist, Surgery."@en .
+
+# ==============================================================================
+# Object Property Definitions
+# ==============================================================================
+
+# --- hasSymptom ---------------------------------------------------------------
+med:hasSymptom
+    a owl:ObjectProperty ;
+    rdfs:label "has symptom"@en ;
+    rdfs:comment "Relates a disease to one of its characteristic symptoms. A disease may have multiple symptoms."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range  med:Symptom ;
+    owl:equivalentProperty wdt:P780 .
+
+# --- hasTreatment -------------------------------------------------------------
+med:hasTreatment
+    a owl:ObjectProperty ;
+    rdfs:label "has treatment"@en ;
+    rdfs:comment "Relates a disease to a possible medical treatment or therapeutic intervention used to manage it."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range  med:Treatment ;
+    owl:equivalentProperty wdt:P924 .
+
+# --- hasMedication ------------------------------------------------------------
+med:hasMedication
+    a owl:ObjectProperty ;
+    rdfs:label "has medication"@en ;
+    rdfs:comment "Relates a disease to a medication (drug) used in its pharmacological management."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range  med:Medication ;
+    owl:equivalentProperty wdt:P2176 .
+
+# --- treatedBy ----------------------------------------------------------------
+med:treatedBy
+    a owl:ObjectProperty ;
+    rdfs:label "treated by"@en ;
+    rdfs:comment "Relates a disease to the medical specialty responsible for its diagnosis and management."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range  med:MedicalSpecialty ;
+    owl:equivalentProperty wdt:P1995 .
+
+# --- fromSource ---------------------------------------------------------------
+med:fromSource
+    a owl:ObjectProperty ;
+    rdfs:label "from source"@en ;
+    rdfs:comment "Records the provenance URL from which an entity was originally extracted."@en ;
+    rdfs:domain owl:Thing ;
+    rdfs:range  rdfs:Resource .
+
+# ==============================================================================
+# Predicate Alignment Summary (documented as annotations)
+# The owl:equivalentProperty axioms above encode the following mapping:
+#
+#   med:hasSymptom   ≡  wdt:P780   (symptoms)
+#   med:hasTreatment ≡  wdt:P924   (possible treatment)
+#   med:hasMedication≡  wdt:P2176  (drug used for treatment)
+#   med:treatedBy    ≡  wdt:P1995  (health specialty)
+# ==============================================================================

@@ -1,0 +1,491 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://family.example.org/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     ontologyIRI="http://family.example.org/">
+
+    <Prefix name="" IRI="http://family.example.org/"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="swrl" IRI="http://www.w3.org/2003/11/swrl#"/>
+    <Prefix name="swrlb" IRI="http://www.w3.org/2003/11/swrlb#"/>
+
+    <!-- ======================== -->
+    <!-- Classes                  -->
+    <!-- ======================== -->
+
+    <Declaration>
+        <Class IRI="http://family.example.org/Person"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://family.example.org/Man"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://family.example.org/Woman"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://family.example.org/OldPerson"/>
+    </Declaration>
+
+    <!-- Man and Woman are subclasses of Person -->
+    <SubClassOf>
+        <Class IRI="http://family.example.org/Man"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://family.example.org/Woman"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </SubClassOf>
+    <!-- OldPerson is a subclass of Person -->
+    <SubClassOf>
+        <Class IRI="http://family.example.org/OldPerson"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </SubClassOf>
+
+    <!-- Man and Woman are disjoint -->
+    <DisjointClasses>
+        <Class IRI="http://family.example.org/Man"/>
+        <Class IRI="http://family.example.org/Woman"/>
+    </DisjointClasses>
+
+    <!-- ======================== -->
+    <!-- Data Properties          -->
+    <!-- ======================== -->
+
+    <Declaration>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+    </Declaration>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+
+    <!-- ======================== -->
+    <!-- Object Properties        -->
+    <!-- ======================== -->
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyRange>
+    <SymmetricObjectProperty>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+    </SymmetricObjectProperty>
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasParent"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasParent"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasParent"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyRange>
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyRange>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <ObjectProperty IRI="http://family.example.org/hasParent"/>
+    </InverseObjectProperties>
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyRange>
+    <SymmetricObjectProperty>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+    </SymmetricObjectProperty>
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasBrother"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasBrother"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasBrother"/>
+        <Class IRI="http://family.example.org/Man"/>
+    </ObjectPropertyRange>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="http://family.example.org/hasBrother"/>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+    </SubObjectPropertyOf>
+
+    <Declaration>
+        <ObjectProperty IRI="http://family.example.org/hasSister"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://family.example.org/hasSister"/>
+        <Class IRI="http://family.example.org/Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://family.example.org/hasSister"/>
+        <Class IRI="http://family.example.org/Woman"/>
+    </ObjectPropertyRange>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="http://family.example.org/hasSister"/>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+    </SubObjectPropertyOf>
+
+    <!-- ======================== -->
+    <!-- Individuals               -->
+    <!-- ======================== -->
+
+    <!-- John: Man, age 65 (should become OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Man"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">65</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/John</IRI>
+        <Literal>John</Literal>
+    </AnnotationAssertion>
+
+    <!-- Mary: Woman, age 72 (should become OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Woman"/>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">72</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Mary</IRI>
+        <Literal>Mary</Literal>
+    </AnnotationAssertion>
+
+    <!-- Bob: Man, age 45 (NOT OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Man"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">45</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Bob</IRI>
+        <Literal>Bob</Literal>
+    </AnnotationAssertion>
+
+    <!-- Alice: Woman, age 30 (NOT OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Woman"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">30</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Alice</IRI>
+        <Literal>Alice</Literal>
+    </AnnotationAssertion>
+
+    <!-- George: Man, age 78 (should become OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Man"/>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">78</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/George</IRI>
+        <Literal>George</Literal>
+    </AnnotationAssertion>
+
+    <!-- Helen: Woman, age 61 (should become OldPerson — strictly > 60) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Helen"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Woman"/>
+        <NamedIndividual IRI="http://family.example.org/Helen"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Helen"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">61</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Helen</IRI>
+        <Literal>Helen</Literal>
+    </AnnotationAssertion>
+
+    <!-- Charlie: Man, age 55 (NOT OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Man"/>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">55</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Charlie</IRI>
+        <Literal>Charlie</Literal>
+    </AnnotationAssertion>
+
+    <!-- Diana: Woman, age 25 (NOT OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Diana"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Woman"/>
+        <NamedIndividual IRI="http://family.example.org/Diana"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Diana"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">25</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Diana</IRI>
+        <Literal>Diana</Literal>
+    </AnnotationAssertion>
+
+    <!-- Edward: Man, age 85 (should become OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Edward"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Man"/>
+        <NamedIndividual IRI="http://family.example.org/Edward"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Edward"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">85</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Edward</IRI>
+        <Literal>Edward</Literal>
+    </AnnotationAssertion>
+
+    <!-- Fiona: Woman, age 40 (NOT OldPerson) -->
+    <Declaration>
+        <NamedIndividual IRI="http://family.example.org/Fiona"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://family.example.org/Woman"/>
+        <NamedIndividual IRI="http://family.example.org/Fiona"/>
+    </ClassAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://family.example.org/hasAge"/>
+        <NamedIndividual IRI="http://family.example.org/Fiona"/>
+        <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">40</Literal>
+    </DataPropertyAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://family.example.org/Fiona</IRI>
+        <Literal>Fiona</Literal>
+    </AnnotationAssertion>
+
+    <!-- Object property assertions -->
+    <!-- John hasSpouse Mary -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+    </ObjectPropertyAssertion>
+
+    <!-- John hasChild Bob -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Mary hasChild Bob -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Mary hasChild Alice -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/Mary"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+    </ObjectPropertyAssertion>
+
+    <!-- John hasChild Alice -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Bob hasSibling Alice -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasSibling"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Alice hasBrother Bob -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasBrother"/>
+        <NamedIndividual IRI="http://family.example.org/Alice"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+    </ObjectPropertyAssertion>
+
+    <!-- George hasSpouse Helen -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+        <NamedIndividual IRI="http://family.example.org/Helen"/>
+    </ObjectPropertyAssertion>
+
+    <!-- George hasChild Charlie -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+    </ObjectPropertyAssertion>
+
+    <!-- George hasChild Fiona -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/George"/>
+        <NamedIndividual IRI="http://family.example.org/Fiona"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Charlie hasSpouse Diana -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasSpouse"/>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+        <NamedIndividual IRI="http://family.example.org/Diana"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Edward hasChild John -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasChild"/>
+        <NamedIndividual IRI="http://family.example.org/Edward"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Charlie hasSister Fiona -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasSister"/>
+        <NamedIndividual IRI="http://family.example.org/Charlie"/>
+        <NamedIndividual IRI="http://family.example.org/Fiona"/>
+    </ObjectPropertyAssertion>
+
+    <!-- Bob hasParent John -->
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="http://family.example.org/hasParent"/>
+        <NamedIndividual IRI="http://family.example.org/Bob"/>
+        <NamedIndividual IRI="http://family.example.org/John"/>
+    </ObjectPropertyAssertion>
+
+    <!-- ======================== -->
+    <!-- SWRL Rule                -->
+    <!-- Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p) -->
+    <!-- ======================== -->
+
+    <DLSafeRule>
+        <Body>
+            <ClassAtom>
+                <Class IRI="http://family.example.org/Person"/>
+                <Variable IRI="urn:swrl:var#p"/>
+            </ClassAtom>
+            <DataPropertyAtom>
+                <DataProperty IRI="http://family.example.org/hasAge"/>
+                <Variable IRI="urn:swrl:var#p"/>
+                <Variable IRI="urn:swrl:var#a"/>
+            </DataPropertyAtom>
+            <BuiltInAtom IRI="http://www.w3.org/2003/11/swrlb#greaterThan">
+                <Variable IRI="urn:swrl:var#a"/>
+                <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">60</Literal>
+            </BuiltInAtom>
+        </Body>
+        <Head>
+            <ClassAtom>
+                <Class IRI="http://family.example.org/OldPerson"/>
+                <Variable IRI="urn:swrl:var#p"/>
+            </ClassAtom>
+        </Head>
+    </DLSafeRule>
+
+</Ontology>

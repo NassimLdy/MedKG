@@ -1,0 +1,2265 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix med: <http://medkg.local/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+med: a owl:Ontology ;
+    rdfs:label "Medical Knowledge Graph Ontology"@en ;
+    dct:created "2026-03-24"^^xsd:date ;
+    dct:creator "MedKG Project (Educational)" ;
+    dct:description "This ontology defines the conceptual schema for the Medical Knowledge Graph (MedKG). It provides class definitions for medical entities, object property definitions for relationships between them, and equivalence alignments to Wikidata predicates to enable federated querying and knowledge expansion."@en ;
+    dct:title "MedKG Ontology"@en ;
+    rdfs:comment "An OWL ontology for a medical knowledge base covering diseases, symptoms, treatments, medications, and medical specialties. Constructed from Wikipedia-derived data and aligned to Wikidata."@en ;
+    owl:versionInfo "1.0.0" .
+
+med:abdominal_pain a med:Symptom ;
+    rdfs:label "Abdominal pain"@en,
+        "abdominal pain"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:ace_inhibitor a med:Medication ;
+    rdfs:label "ACE inhibitor"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:ace_inhibitors a med:Medication ;
+    rdfs:label "ACE inhibitors"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Brain_natriuretic_peptide_32>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:acetaminophen a med:Medication ;
+    rdfs:label "acetaminophen"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease> .
+
+med:adalimumab a med:Medication ;
+    rdfs:label "adalimumab"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:adhd a med:Disease ;
+    rdfs:label "ADHD"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:aids a med:Disease ;
+    rdfs:label "AIDS"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:albuterol a med:Medication ;
+    rdfs:label "albuterol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Asthma> .
+
+med:allergy_and_immunology a med:MedicalSpecialty ;
+    rdfs:label "Allergy and Immunology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Allergen_immunotherapy> .
+
+med:alzheimer_disease a med:Disease ;
+    rdfs:label "Alzheimer disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease> .
+
+med:amlodipine a med:Medication ;
+    rdfs:label "amlodipine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:amoxicillin a med:Medication ;
+    rdfs:label "amoxicillin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:amputation a med:Treatment ;
+    rdfs:label "amputation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:anemia a med:Disease ;
+    rdfs:label "Anemia"@en,
+        "anemia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:angioplasty a med:Treatment ;
+    rdfs:label "angioplasty"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:anorexia a med:Symptom ;
+    rdfs:label "Anorexia"@en,
+        "anorexia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:antibiotic a med:Medication ;
+    rdfs:label "antibiotic"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:antibiotics a med:Medication ;
+    rdfs:label "Antibiotics"@en,
+        "antibiotics"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:anticoagulant a med:Medication ;
+    rdfs:label "Anticoagulant"@en,
+        "anticoagulant"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:anticoagulants a med:Medication ;
+    rdfs:label "anticoagulants"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:antidepressant a med:Medication ;
+    rdfs:label "Antidepressant"@en,
+        "antidepressant"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:antidepressants a med:Medication ;
+    rdfs:label "Antidepressants"@en,
+        "antidepressants"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:antihypertensive a med:Medication ;
+    rdfs:label "Antihypertensive"@en,
+        "antihypertensive"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:antiviral a med:Medication ;
+    rdfs:label "antiviral"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:anxiety a med:Symptom ;
+    rdfs:label "Anxiety"@en,
+        "anxiety"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:anxiety_disorder a med:Disease ;
+    rdfs:label "Anxiety Disorder"@en,
+        "Anxiety disorder"@en,
+        "anxiety disorder"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:apixaban a med:Medication ;
+    rdfs:label "apixaban"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Stroke> .
+
+med:aspirin a med:Medication ;
+    rdfs:label "Aspirin"@en,
+        "aspirin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:asthma a med:Disease ;
+    rdfs:label "Asthma"@en,
+        "asthma"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:atenolol a med:Medication ;
+    rdfs:label "atenolol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:atrial_fibrillation a med:Disease ;
+    rdfs:label "atrial fibrillation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anterior_cerebral_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:attention_deficit_hyperactivity_disorder a med:Disease ;
+    rdfs:label "Attention deficit hyperactivity disorder"@en,
+        "attention deficit hyperactivity disorder"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:autism a med:Disease ;
+    rdfs:label "Autism"@en,
+        "autism"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:autism_spectrum_disorder a med:Disease ;
+    rdfs:label "autism spectrum disorder"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder> .
+
+med:azithromycin a med:Medication ;
+    rdfs:label "azithromycin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:beta_blockers a med:Medication ;
+    rdfs:label "beta blockers"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:bevacizumab a med:Medication ;
+    rdfs:label "bevacizumab"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:bipolar_disorder a med:Disease ;
+    rdfs:label "Bipolar disorder"@en,
+        "bipolar disorder"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:bloating a med:Symptom ;
+    rdfs:label "bloating"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery> .
+
+med:blood_transfusion a med:Treatment ;
+    rdfs:label "Blood transfusion"@en,
+        "blood transfusion"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:blurred_vision a med:Symptom ;
+    rdfs:label "blurred vision"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:bradycardia a med:Symptom ;
+    rdfs:label "bradycardia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome> .
+
+med:breast_cancer a med:Disease ;
+    rdfs:label "Breast cancer"@en,
+        "breast cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:bypass_surgery a med:Treatment ;
+    rdfs:label "bypass surgery"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:cancer a med:Disease ;
+    rdfs:label "Cancer"@en,
+        "cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Brain_natriuretic_peptide_32>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:carbidopa a med:Medication ;
+    rdfs:label "carbidopa"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:cardiologist a med:MedicalSpecialty ;
+    rdfs:label "Cardiologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Heart_Association> .
+
+med:cardiology a med:MedicalSpecialty ;
+    rdfs:label "Cardiology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:cataracts a med:Disease ;
+    rdfs:label "cataracts"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anti-obesity_medication> .
+
+med:cbt a med:Treatment ;
+    rdfs:label "CBT"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:chemotherapy a med:Treatment ;
+    rdfs:label "chemotherapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:chest_pain a med:Symptom ;
+    rdfs:label "Chest pain"@en,
+        "chest pain"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:chest_tightness a med:Symptom ;
+    rdfs:label "chest tightness"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Asthma> .
+
+med:chills a med:Symptom ;
+    rdfs:label "chills"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:chronic_kidney_disease a med:Disease ;
+    rdfs:label "Chronic kidney disease"@en,
+        "chronic kidney disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:chronic_obstructive_pulmonary_disease a med:Disease ;
+    rdfs:label "Chronic obstructive pulmonary disease"@en,
+        "chronic obstructive pulmonary disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:ciprofloxacin a med:Medication ;
+    rdfs:label "ciprofloxacin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:cirrhosis a med:Disease ;
+    rdfs:label "cirrhosis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:cluster_headache a med:Disease ;
+    rdfs:label "Cluster headache"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery> .
+
+med:cognitive_behavioral_therapy a med:Treatment ;
+    rdfs:label "Cognitive behavioral therapy"@en,
+        "cognitive behavioral therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:cognitive_decline a med:Symptom ;
+    rdfs:label "cognitive decline"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:colon_cancer a med:Disease ;
+    rdfs:label "colon cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:colorectal_cancer a med:Disease ;
+    rdfs:label "Colorectal cancer"@en,
+        "colorectal cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:confusion a med:Symptom ;
+    rdfs:label "confusion"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:congestive_heart_failure a med:Disease ;
+    rdfs:label "Congestive heart failure"@en,
+        "congestive heart failure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:constipation a med:Symptom ;
+    rdfs:label "Constipation"@en,
+        "constipation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:convulsion a med:Symptom ;
+    rdfs:label "convulsion"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)> .
+
+med:copd a med:Disease ;
+    rdfs:label "COPD"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:coronary_artery_disease a med:Disease ;
+    rdfs:label "Coronary artery disease"@en,
+        "coronary artery disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:coronary_bypass a med:Treatment ;
+    rdfs:label "Coronary bypass"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:corticosteroids a med:Medication ;
+    rdfs:label "Corticosteroids"@en,
+        "corticosteroids"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:cough a med:Symptom ;
+    rdfs:label "Cough"@en,
+        "cough"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:covid_19 a med:Disease ;
+    rdfs:label "COVID-19"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Africa_Centres_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:cyanosis a med:Symptom ;
+    rdfs:label "Cyanosis"@en,
+        "cyanosis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:deep_brain_stimulation a med:Treatment ;
+    rdfs:label "Deep brain stimulation"@en,
+        "deep brain stimulation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:depression a med:Disease ;
+    rdfs:label "Depression"@en,
+        "depression"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anoxic_depolarization_in_the_brain>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:dermatitis a med:Disease ;
+    rdfs:label "dermatitis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:dexamethasone a med:Medication ;
+    rdfs:label "dexamethasone"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:diabetes a med:Disease ;
+    rdfs:label "Diabetes"@en,
+        "diabetes"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Diabetes_Association>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anterior_cerebral_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Automated_insulin_delivery_system>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> ;
+    med:hasMedication med:insulin .
+
+med:dialysis a med:Treatment ;
+    rdfs:label "Dialysis"@en,
+        "dialysis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:diarrhea a med:Symptom ;
+    rdfs:label "diarrhea"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Amoebic_brain_abscess>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:diuretic a med:Medication ;
+    rdfs:label "diuretic"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:diuretics a med:Medication ;
+    rdfs:label "Diuretics"@en,
+        "diuretics"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:dizziness a med:Symptom ;
+    rdfs:label "dizziness"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:donepezil a med:Medication ;
+    rdfs:label "donepezil"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease> .
+
+med:doxycycline a med:Medication ;
+    rdfs:label "doxycycline"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:dyspnea a med:Symptom ;
+    rdfs:label "Dyspnea"@en,
+        "dyspnea"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Brain_natriuretic_peptide_32>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:dysuria a med:Symptom ;
+    rdfs:label "dysuria"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy> .
+
+med:ect a med:Treatment ;
+    rdfs:label "ECT"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:eczema a med:Disease ;
+    rdfs:label "eczema"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asthma> .
+
+med:edema a med:Symptom ;
+    rdfs:label "edema"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:electroconvulsive_therapy a med:Treatment ;
+    rdfs:label "Electroconvulsive therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:emergency_medicine a med:MedicalSpecialty ;
+    rdfs:label "Emergency Medicine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Stroke> .
+
+med:emphysema a med:Disease ;
+    rdfs:label "Emphysema"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_severe_asthma> .
+
+med:endocrinologist a med:MedicalSpecialty ;
+    rdfs:label "endocrinologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:epilepsy a med:Disease ;
+    rdfs:label "epilepsy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:escitalopram a med:Medication ;
+    rdfs:label "escitalopram"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:etanercept a med:Medication ;
+    rdfs:label "etanercept"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:family_medicine a med:MedicalSpecialty ;
+    rdfs:label "family medicine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Athletic_heart_syndrome> .
+
+med:fatigue a med:Symptom ;
+    rdfs:label "fatigue"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:fatty_liver_disease a med:Disease ;
+    rdfs:label "Fatty liver disease"@en,
+        "fatty liver disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:fever a med:Symptom ;
+    rdfs:label "Fever"@en,
+        "fever"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Amoebic_brain_abscess>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:fibromyalgia a med:Disease ;
+    rdfs:label "fibromyalgia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Binge_eating_disorder> .
+
+med:flu a med:Disease ;
+    rdfs:label "flu"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:fluoxetine a med:Medication ;
+    rdfs:label "Fluoxetine"@en,
+        "fluoxetine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:fromSource a owl:ObjectProperty ;
+    rdfs:label "from source"@en ;
+    rdfs:comment "Records the provenance URL from which an entity was originally extracted."@en ;
+    rdfs:domain owl:Thing ;
+    rdfs:range rdfs:Resource .
+
+med:furosemide a med:Medication ;
+    rdfs:label "furosemide"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:gestational_diabetes a med:Disease ;
+    rdfs:label "Gestational diabetes"@en,
+        "gestational diabetes"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Diabetes_Association>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:glaucoma a med:Disease ;
+    rdfs:label "glaucoma"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:gout a med:Disease ;
+    rdfs:label "Gout"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:haloperidol a med:Medication ;
+    rdfs:label "haloperidol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bipolar_II_disorder> .
+
+med:hasMedication a owl:ObjectProperty ;
+    rdfs:label "has medication"@en ;
+    rdfs:comment "Relates a disease to a medication (drug) used in its pharmacological management."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range med:Medication ;
+    owl:equivalentProperty wdt:P2176 .
+
+med:hasSymptom a owl:ObjectProperty ;
+    rdfs:label "has symptom"@en ;
+    rdfs:comment "Relates a disease to one of its characteristic symptoms. A disease may have multiple symptoms."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range med:Symptom ;
+    owl:equivalentProperty wdt:P780 .
+
+med:hasTreatment a owl:ObjectProperty ;
+    rdfs:label "has treatment"@en ;
+    rdfs:comment "Relates a disease to a possible medical treatment or therapeutic intervention used to manage it."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range med:Treatment ;
+    owl:equivalentProperty wdt:P924 .
+
+med:headache a med:Symptom ;
+    rdfs:label "headache"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:heart_attack a med:Disease ;
+    rdfs:label "heart attack"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:heart_failure a med:Disease ;
+    rdfs:label "Heart failure"@en,
+        "heart failure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Brain_natriuretic_peptide_32>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Cardiac_resynchronization_therapy>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:heart_transplant a med:Treatment ;
+    rdfs:label "heart transplant"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:hemodialysis a med:Treatment ;
+    rdfs:label "hemodialysis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury> .
+
+med:hemoptysis a med:Symptom ;
+    rdfs:label "hemoptysis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:hemorrhagic_stroke a med:Disease ;
+    rdfs:label "Hemorrhagic stroke"@en,
+        "hemorrhagic stroke"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:heparin a med:Medication ;
+    rdfs:label "heparin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:hepatitis a med:Disease ;
+    rdfs:label "Hepatitis"@en,
+        "hepatitis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:hepatitis_b a med:Disease ;
+    rdfs:label "hepatitis B"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:hepatitis_c a med:Disease ;
+    rdfs:label "hepatitis C"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:high_blood_pressure a med:Disease,
+        med:Symptom ;
+    rdfs:label "High blood pressure"@en,
+        "high blood pressure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anterior_cerebral_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:hiv a med:Disease ;
+    rdfs:label "HIV"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Africa_Centres_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:hives a med:Symptom ;
+    rdfs:label "hives"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease> .
+
+med:hormone_replacement_therapy a med:Treatment ;
+    rdfs:label "hormone replacement therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:hormone_therapy a med:Treatment ;
+    rdfs:label "hormone therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease> .
+
+med:hydrocortisone a med:Medication ;
+    rdfs:label "Hydrocortisone"@en,
+        "hydrocortisone"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy> .
+
+med:hydroxychloroquine a med:Medication ;
+    rdfs:label "hydroxychloroquine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:hypertension a med:Disease,
+        med:Symptom ;
+    rdfs:label "Hypertension"@en,
+        "hypertension"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:hyperthyroidism a med:Disease ;
+    rdfs:label "Hyperthyroidism"@en,
+        "hyperthyroidism"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> ;
+    med:hasSymptom med:loss .
+
+med:hypothyroidism a med:Disease ;
+    rdfs:label "Hypothyroidism"@en,
+        "hypothyroidism"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:ibuprofen a med:Medication ;
+    rdfs:label "ibuprofen"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:immunology a med:MedicalSpecialty ;
+    rdfs:label "Immunology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Allergen_immunotherapy> .
+
+med:immunotherapy a med:Treatment ;
+    rdfs:label "immunotherapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:infectious_disease_specialist a med:MedicalSpecialty ;
+    rdfs:label "infectious disease specialist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers> .
+
+med:inflammation a med:Symptom ;
+    rdfs:label "Inflammation"@en,
+        "inflammation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:infliximab a med:Medication ;
+    rdfs:label "infliximab"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:influenza a med:Disease ;
+    rdfs:label "Influenza"@en,
+        "influenza"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:insomnia a med:Symptom ;
+    rdfs:label "Insomnia"@en,
+        "insomnia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:internal_medicine a med:MedicalSpecialty ;
+    rdfs:label "Internal Medicine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Heart_Association> .
+
+med:irritability a med:Symptom ;
+    rdfs:label "irritability"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:ischemic_stroke a med:Disease ;
+    rdfs:label "Ischemic stroke"@en,
+        "ischemic stroke"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anoxic_depolarization_in_the_brain>,
+        <https://en.wikipedia.org/wiki/Anterior_cerebral_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:itching a med:Symptom ;
+    rdfs:label "itching"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Anal_cancer> .
+
+med:jaundice a med:Symptom ;
+    rdfs:label "jaundice"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:kidney_failure a med:Disease ;
+    rdfs:label "Kidney failure"@en,
+        "kidney failure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:kidney_transplant a med:Treatment ;
+    rdfs:label "Kidney transplant"@en,
+        "kidney transplant"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:laser_therapy a med:Treatment ;
+    rdfs:label "Laser therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Cancer> .
+
+med:leukemia a med:Disease ;
+    rdfs:label "leukemia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:levodopa a med:Medication ;
+    rdfs:label "levodopa"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:light_therapy a med:Treatment ;
+    rdfs:label "light therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:liver_disease a med:Disease ;
+    rdfs:label "liver disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:liver_transplant a med:Treatment ;
+    rdfs:label "liver transplant"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_liver_failure> .
+
+med:loss_of_appetite a med:Symptom ;
+    rdfs:label "loss of appetite"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:lung_cancer a med:Disease ;
+    rdfs:label "lung cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:lupus a med:Disease ;
+    rdfs:label "lupus"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury> .
+
+med:lymphoma a med:Disease ;
+    rdfs:label "lymphoma"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:major_depressive_disorder a med:Disease ;
+    rdfs:label "Major depressive disorder"@en,
+        "major depressive disorder"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:malaria a med:Disease ;
+    rdfs:label "Malaria"@en,
+        "malaria"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Africa_Centres_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:mechanical_ventilation a med:Treatment ;
+    rdfs:label "Mechanical ventilation"@en,
+        "mechanical ventilation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma> .
+
+med:melanoma a med:Disease ;
+    rdfs:label "melanoma"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:memantine a med:Medication ;
+    rdfs:label "memantine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease> .
+
+med:memory_loss a med:Symptom ;
+    rdfs:label "memory loss"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:metformin a med:Medication ;
+    rdfs:label "metformin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:methotrexate a med:Medication ;
+    rdfs:label "methotrexate"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:metronidazole a med:Medication ;
+    rdfs:label "Metronidazole"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Amoebic_brain_abscess> .
+
+med:migraine a med:Disease ;
+    rdfs:label "Migraine"@en,
+        "migraine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:montelukast a med:Medication ;
+    rdfs:label "montelukast"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma> .
+
+med:mood_swings a med:Symptom ;
+    rdfs:label "mood swings"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:multiple_sclerosis a med:Disease ;
+    rdfs:label "multiple sclerosis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:muscle_weakness a med:Symptom ;
+    rdfs:label "muscle weakness"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:myocardial_infarction a med:Disease ;
+    rdfs:label "myocardial infarction"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:naproxen a med:Medication ;
+    rdfs:label "naproxen"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:nausea a med:Symptom ;
+    rdfs:label "Nausea"@en,
+        "nausea"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:nephrologist a med:MedicalSpecialty ;
+    rdfs:label "nephrologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury> .
+
+med:neurologist a med:MedicalSpecialty ;
+    rdfs:label "neurologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:neurology a med:MedicalSpecialty ;
+    rdfs:label "Neurology"@en,
+        "neurology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:neurosurgery a med:MedicalSpecialty ;
+    rdfs:label "Neurosurgery"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery> .
+
+med:night_sweats a med:Symptom ;
+    rdfs:label "Night Sweats"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:numbness a med:Symptom ;
+    rdfs:label "numbness"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:obesity a med:Disease ;
+    rdfs:label "Obesity"@en,
+        "obesity"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Diabetes_Association>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:occupational_therapy a med:Treatment ;
+    rdfs:label "Occupational therapy"@en,
+        "occupational therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:olanzapine a med:Medication ;
+    rdfs:label "olanzapine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder> .
+
+med:omeprazole a med:Medication ;
+    rdfs:label "Omeprazole"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Antiplatelet_drug> .
+
+med:oncology a med:MedicalSpecialty ;
+    rdfs:label "oncology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:ophthalmologist a med:MedicalSpecialty ;
+    rdfs:label "ophthalmologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:opioid a med:Medication ;
+    rdfs:label "Opioid"@en,
+        "opioid"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder> .
+
+med:opioids a med:Medication ;
+    rdfs:label "Opioids"@en,
+        "opioids"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:osteoporosis a med:Disease ;
+    rdfs:label "osteoporosis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Bariatric_surgery> .
+
+med:oxygen_therapy a med:Treatment ;
+    rdfs:label "Oxygen therapy"@en,
+        "oxygen therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:palpitations a med:Symptom ;
+    rdfs:label "palpitations"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:paracetamol a med:Medication ;
+    rdfs:label "paracetamol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease> .
+
+med:paresthesia a med:Symptom ;
+    rdfs:label "paresthesia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)> .
+
+med:parkinson_disease a med:Disease ;
+    rdfs:label "Parkinson Disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:paroxetine a med:Medication ;
+    rdfs:label "paroxetine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:pathologist a med:MedicalSpecialty ;
+    rdfs:label "pathologist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:pathology a med:MedicalSpecialty ;
+    rdfs:label "Pathology"@en,
+        "pathology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease_and_COVID-19>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:pediatrician a med:MedicalSpecialty ;
+    rdfs:label "pediatrician"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asperger_syndrome> .
+
+med:pediatrics a med:MedicalSpecialty ;
+    rdfs:label "Pediatrics"@en,
+        "pediatrics"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:penicillin a med:Medication ;
+    rdfs:label "penicillin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:physical_therapy a med:Treatment ;
+    rdfs:label "physical therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:physiotherapy a med:Treatment ;
+    rdfs:label "physiotherapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:pneumonia a med:Disease ;
+    rdfs:label "Pneumonia"@en,
+        "pneumonia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:polydipsia a med:Symptom ;
+    rdfs:label "polydipsia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:polyphagia a med:Symptom ;
+    rdfs:label "polyphagia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:polyuria a med:Symptom ;
+    rdfs:label "polyuria"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:prednisone a med:Medication ;
+    rdfs:label "prednisone"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asthma> .
+
+med:propranolol a med:Medication ;
+    rdfs:label "propranolol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome> .
+
+med:prostate_cancer a med:Disease ;
+    rdfs:label "prostate cancer"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:psychiatrist a med:MedicalSpecialty ;
+    rdfs:label "psychiatrist"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:psychiatry a med:MedicalSpecialty ;
+    rdfs:label "Psychiatry"@en,
+        "psychiatry"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:psychotherapy a med:Treatment ;
+    rdfs:label "psychotherapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Adjustment_disorder>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:radiation_therapy a med:Treatment ;
+    rdfs:label "radiation therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:radiology a med:MedicalSpecialty ;
+    rdfs:label "radiology"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:radiotherapy a med:Treatment ;
+    rdfs:label "radiotherapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:rash a med:Symptom ;
+    rdfs:label "rash"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection> .
+
+med:rehabilitation a med:Treatment ;
+    rdfs:label "rehabilitation"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:renal_failure a med:Disease ;
+    rdfs:label "renal failure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/COVID-19> .
+
+med:rheumatoid_arthritis a med:Disease ;
+    rdfs:label "rheumatoid arthritis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis> .
+
+med:rigidity a med:Symptom ;
+    rdfs:label "rigidity"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:risperidone a med:Medication ;
+    rdfs:label "risperidone"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder> .
+
+med:salbutamol a med:Medication ;
+    rdfs:label "Salbutamol"@en,
+        "salbutamol"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:schizophrenia a med:Disease ;
+    rdfs:label "Schizophrenia"@en,
+        "schizophrenia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Bipolar_I_disorder>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:seizure a med:Symptom ;
+    rdfs:label "seizure"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:sepsis a med:Disease ;
+    rdfs:label "sepsis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia> .
+
+med:sertraline a med:Medication ;
+    rdfs:label "sertraline"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:shortness_of_breath a med:Symptom ;
+    rdfs:label "Shortness of breath"@en,
+        "shortness of breath"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_exacerbation_of_chronic_obstructive_pulmonary_disease>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_severe_asthma>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Bacterial_pneumonia>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:sitagliptin a med:Medication ;
+    rdfs:label "sitagliptin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:sleep_disturbance a med:Symptom ;
+    rdfs:label "sleep disturbance"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anxiety_disorder>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder> .
+
+med:spironolactone a med:Medication ;
+    rdfs:label "spironolactone"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:statin a med:Medication ;
+    rdfs:label "statin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Heart_Association> .
+
+med:statins a med:Medication ;
+    rdfs:label "Statins"@en,
+        "statins"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:stem_cell_therapy a med:Treatment ;
+    rdfs:label "stem cell therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:stent_placement a med:Treatment ;
+    rdfs:label "stent placement"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome> .
+
+med:stenting a med:Treatment ;
+    rdfs:label "stenting"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Stroke> .
+
+med:stroke a med:Disease ;
+    rdfs:label "Stroke"@en,
+        "stroke"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease>,
+        <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anoxic_depolarization_in_the_brain>,
+        <https://en.wikipedia.org/wiki/Anterior_cerebral_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Anterior_spinal_artery_syndrome>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Behavior_change_(public_health)>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:surgeon a med:MedicalSpecialty ;
+    rdfs:label "Surgeon"@en,
+        "surgeon"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Cardiac_resynchronization_therapy>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:surgery a med:MedicalSpecialty,
+        med:Treatment ;
+    rdfs:label "Surgery"@en,
+        "surgery"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Acute_respiratory_distress_syndrome>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Agency_for_Healthcare_Research_and_Quality>,
+        <https://en.wikipedia.org/wiki/Alien_hand_syndrome>,
+        <https://en.wikipedia.org/wiki/Anal_cancer>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Antiplatelet_drug>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Aspirin-exacerbated_respiratory_disease>,
+        <https://en.wikipedia.org/wiki/Automated_insulin_delivery_system>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Brain_natriuretic_peptide_32>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:surgical_resection a med:Treatment ;
+    rdfs:label "Surgical resection"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anal_cancer> .
+
+med:swelling a med:Symptom ;
+    rdfs:label "swelling"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Anoxic_depolarization_in_the_brain>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:systemic_lupus_erythematosus a med:Disease ;
+    rdfs:label "systemic lupus erythematosus"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:tachycardia a med:Symptom ;
+    rdfs:label "tachycardia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_coronary_syndrome>,
+        <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Acute_stress_reaction>,
+        <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Athletic_heart_syndrome>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:targeted_therapy a med:Treatment ;
+    rdfs:label "targeted therapy"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Cancer> .
+
+med:thalassemia a med:Disease ;
+    rdfs:label "Thalassemia"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Anorexia_(symptom)> .
+
+med:thyroid_disease a med:Disease ;
+    rdfs:label "thyroid disease"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:tingling a med:Symptom ;
+    rdfs:label "tingling"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:tiotropium a med:Medication ;
+    rdfs:label "tiotropium"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Asthma> .
+
+med:trastuzumab a med:Medication ;
+    rdfs:label "trastuzumab"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:treatedBy a owl:ObjectProperty ;
+    rdfs:label "treated by"@en ;
+    rdfs:comment "Relates a disease to the medical specialty responsible for its diagnosis and management."@en ;
+    rdfs:domain med:Disease ;
+    rdfs:range med:MedicalSpecialty ;
+    owl:equivalentProperty wdt:P1995 .
+
+med:tremor a med:Symptom ;
+    rdfs:label "tremor"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Ablative_brain_surgery>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:tuberculosis a med:Disease ;
+    rdfs:label "Tuberculosis"@en,
+        "tuberculosis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_pericarditis>,
+        <https://en.wikipedia.org/wiki/Africa_Centres_for_Disease_Control_and_Prevention>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention> .
+
+med:type_1_diabetes a med:Disease ;
+    rdfs:label "Type 1 diabetes"@en,
+        "type 1 diabetes"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/American_Diabetes_Association>,
+        <https://en.wikipedia.org/wiki/Automated_insulin_delivery_system>,
+        <https://en.wikipedia.org/wiki/Diabetes> .
+
+med:type_2_diabetes a med:Disease ;
+    rdfs:label "Type 2 Diabetes"@en,
+        "Type 2 diabetes"@en,
+        "type 2 diabetes"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Diabetes_Association>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/COVID-19>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:ulcerative_colitis a med:Disease ;
+    rdfs:label "Ulcerative colitis"@en,
+        "ulcerative colitis"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Cancer> .
+
+med:venlafaxine a med:Medication ;
+    rdfs:label "Venlafaxine"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:verapamil a med:Medication ;
+    rdfs:label "verapamil"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Andersen%E2%80%93Tawil_syndrome>,
+        <https://en.wikipedia.org/wiki/Heart_failure> .
+
+med:vertigo a med:Symptom ;
+    rdfs:label "vertigo"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Aura_(symptom)>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:vision_loss a med:Symptom ;
+    rdfs:label "vision loss"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:vomiting a med:Symptom ;
+    rdfs:label "vomiting"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/2002%E2%80%932004_SARS_outbreak_among_healthcare_workers>,
+        <https://en.wikipedia.org/wiki/Acute_bronchitis>,
+        <https://en.wikipedia.org/wiki/Acute_disseminated_encephalomyelitis>,
+        <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Acute_liver_failure>,
+        <https://en.wikipedia.org/wiki/Adenovirus_infection>,
+        <https://en.wikipedia.org/wiki/Adjuvant_therapy>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:warfarin a med:Medication ;
+    rdfs:label "Warfarin"@en,
+        "warfarin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Artificial_heart_valve>,
+        <https://en.wikipedia.org/wiki/Budd%E2%80%93Chiari_syndrome>,
+        <https://en.wikipedia.org/wiki/Stroke> .
+
+med:weight_gain a med:Symptom ;
+    rdfs:label "Weight gain"@en,
+        "weight gain"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Asperger_syndrome>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Heart_failure>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder> .
+
+med:weight_loss a med:Symptom ;
+    rdfs:label "weight loss"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_decompensated_heart_failure>,
+        <https://en.wikipedia.org/wiki/Alzheimer%27s_disease>,
+        <https://en.wikipedia.org/wiki/American_Heart_Association>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Anti-obesity_medication>,
+        <https://en.wikipedia.org/wiki/Asthma>,
+        <https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder>,
+        <https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Binge_eating_disorder>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Bipolar_II_disorder>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension>,
+        <https://en.wikipedia.org/wiki/Major_depressive_disorder>,
+        <https://en.wikipedia.org/wiki/Parkinson%27s_disease> .
+
+med:insulin a med:Medication ;
+    rdfs:label "Insulin"@en,
+        "insulin"@en ;
+    med:fromSource <https://en.wikipedia.org/wiki/Acute_kidney_injury>,
+        <https://en.wikipedia.org/wiki/Alcohol_(drug)>,
+        <https://en.wikipedia.org/wiki/Allergen_immunotherapy>,
+        <https://en.wikipedia.org/wiki/Anorexia_(symptom)>,
+        <https://en.wikipedia.org/wiki/Automated_insulin_delivery_system>,
+        <https://en.wikipedia.org/wiki/Bariatric_surgery>,
+        <https://en.wikipedia.org/wiki/Biomarkers_of_diabetes>,
+        <https://en.wikipedia.org/wiki/Cancer>,
+        <https://en.wikipedia.org/wiki/Diabetes>,
+        <https://en.wikipedia.org/wiki/Hypertension> .
+
+med:MedicalSpecialty a owl:Class ;
+    rdfs:label "Medical Specialty"@en ;
+    rdfs:comment "A branch of medical science in which a physician specializes. Examples: ophthalmologist, endocrinologist, Surgery."@en ;
+    rdfs:subClassOf owl:Thing .
+
+med:Treatment a owl:Class ;
+    rdfs:label "Treatment"@en ;
+    rdfs:comment "A medical procedure or course of action intended to remedy or manage a disease or condition. Examples: dialysis, amputation, insulin replacement therapy, surgery."@en ;
+    rdfs:subClassOf owl:Thing .
+
+med:Symptom a owl:Class ;
+    rdfs:label "Symptom"@en ;
+    rdfs:comment "A physical or mental feature which is regarded as indicating a condition of disease, particularly such a feature that is apparent to the patient. Examples: polydipsia, polyuria, fatigue, blurred vision."@en ;
+    rdfs:subClassOf owl:Thing .
+
+med:Medication a owl:Class ;
+    rdfs:label "Medication"@en ;
+    rdfs:comment "A drug or other preparation for the treatment or prevention of disease. Examples: insulin, metformin, sitagliptin, aspirin."@en ;
+    rdfs:subClassOf owl:Thing .
+
+med:Disease a owl:Class ;
+    rdfs:label "Disease"@en ;
+    rdfs:comment "A disorder of structure or function in a human, animal, or plant, especially one that produces specific signs or symptoms or that affects a specific location. Examples: Diabetes, Hypertension, COVID-19."@en ;
+    rdfs:subClassOf owl:Thing .
+

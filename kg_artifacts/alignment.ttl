@@ -1,0 +1,543 @@
+@prefix med: <http://medkg.local/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+
+med:abdominal_pain owl:sameAs wd:Q183425 .
+
+med:ace_inhibitor owl:sameAs wd:Q288280 .
+
+med:ace_inhibitors owl:sameAs wd:Q288280 .
+
+med:acetaminophen owl:sameAs wd:Q57055 .
+
+med:adalimumab owl:sameAs wd:Q348260 .
+
+med:adhd owl:sameAs wd:Q181923 .
+
+med:aids owl:sameAs wd:Q12199 .
+
+med:albuterol owl:sameAs wd:Q410358 .
+
+med:allergy_and_immunology owl:sameAs wd:Q101929 .
+
+med:alzheimer_disease owl:sameAs wd:Q11081 .
+
+med:amlodipine owl:sameAs wd:Q411347 .
+
+med:amoxicillin owl:sameAs wd:Q201928 .
+
+med:amputation owl:sameAs wd:Q477415 .
+
+med:anemia owl:sameAs wd:Q3353348 .
+
+med:angioplasty owl:sameAs wd:Q539795 .
+
+med:anorexia owl:sameAs wd:Q131749 .
+
+med:antibiotic owl:sameAs wd:Q12187 .
+
+med:antibiotics owl:sameAs wd:Q27725829 .
+
+med:anticoagulant owl:sameAs wd:Q215118 .
+
+med:anticoagulants owl:sameAs wd:Q215118 .
+
+med:antidepressant owl:sameAs wd:Q76560 .
+
+med:antidepressants owl:sameAs wd:Q76560 .
+
+med:antihypertensive owl:sameAs wd:Q575890 .
+
+med:antiviral owl:sameAs wd:Q846227 .
+
+med:anxiety owl:sameAs wd:Q154430 .
+
+med:anxiety_disorder owl:sameAs wd:Q544006 .
+
+med:apixaban owl:sameAs wd:Q414462 .
+
+med:aspirin owl:sameAs wd:Q18216 .
+
+med:asthma owl:sameAs wd:Q35869 .
+
+med:atenolol owl:sameAs wd:Q411325 .
+
+med:atrial_fibrillation owl:sameAs wd:Q815819 .
+
+med:attention_deficit_hyperactivity_disorder owl:sameAs wd:Q181923 .
+
+med:autism owl:sameAs wd:Q38404 .
+
+med:autism_spectrum_disorder owl:sameAs wd:Q38404 .
+
+med:azithromycin owl:sameAs wd:Q165399 .
+
+med:beta_blockers owl:sameAs wd:Q816759 .
+
+med:bevacizumab owl:sameAs wd:Q413299 .
+
+med:bipolar_disorder owl:sameAs wd:Q131755 .
+
+med:bloating owl:sameAs wd:Q4927059 .
+
+med:blood_transfusion owl:sameAs wd:Q26842792 .
+
+med:blurred_vision owl:sameAs wd:Q4930803 .
+
+med:bradycardia owl:sameAs wd:Q217111 .
+
+med:breast_cancer owl:sameAs wd:Q128581 .
+
+med:bypass_surgery owl:sameAs wd:Q186020 .
+
+med:cancer owl:sameAs wd:Q8849 .
+
+med:carbidopa owl:sameAs wd:Q414225 .
+
+med:cardiologist owl:sameAs wd:Q3264451 .
+
+med:cardiology owl:sameAs wd:Q15751978 .
+
+med:cataracts owl:sameAs wd:Q127724 .
+
+med:cbt owl:sameAs wd:Q1147152 .
+
+med:chemotherapy owl:sameAs wd:Q974135 .
+
+med:chest_pain owl:sameAs wd:Q693058 .
+
+med:chest_tightness owl:sameAs wd:Q21109840 .
+
+med:chills owl:sameAs wd:Q2260058 .
+
+med:chronic_kidney_disease owl:sameAs wd:Q736715 .
+
+med:chronic_obstructive_pulmonary_disease owl:sameAs wd:Q199804 .
+
+med:ciprofloxacin owl:sameAs wd:Q256602 .
+
+med:cirrhosis owl:sameAs wd:Q147778 .
+
+med:cluster_headache owl:sameAs wd:Q166907 .
+
+med:cognitive_behavioral_therapy owl:sameAs wd:Q1147152 .
+
+med:cognitive_decline owl:sameAs wd:Q63338096 .
+
+med:colon_cancer owl:sameAs wd:Q188874 .
+
+med:colorectal_cancer owl:sameAs wd:Q188874 .
+
+med:confusion owl:sameAs wd:Q111529541 .
+
+med:congestive_heart_failure owl:sameAs wd:Q181754 .
+
+med:constipation owl:sameAs wd:Q178436 .
+
+med:convulsion owl:sameAs wd:Q6279182 .
+
+med:copd owl:sameAs wd:Q199804 .
+
+med:coronary_artery_disease owl:sameAs wd:Q844935 .
+
+med:coronary_bypass owl:sameAs wd:Q186020 .
+
+med:corticosteroids owl:sameAs wd:Q100156194 .
+
+med:cough owl:sameAs wd:Q35805 .
+
+med:covid_19 owl:sameAs wd:Q84263196 .
+
+med:cyanosis owl:sameAs wd:Q192120 .
+
+med:deep_brain_stimulation owl:sameAs wd:Q618076 .
+
+med:depression owl:sameAs wd:Q42844 .
+
+med:dermatitis owl:sameAs wd:Q229256 .
+
+med:dexamethasone owl:sameAs wd:Q422252 .
+
+med:diabetes owl:sameAs wd:Q12206 .
+
+med:dialysis owl:sameAs wd:Q202301 .
+
+med:diarrhea owl:sameAs wd:Q40878 .
+
+med:diuretic owl:sameAs wd:Q200656 .
+
+med:diuretics owl:sameAs wd:Q200656 .
+
+med:dizziness owl:sameAs wd:Q10916362 .
+
+med:donepezil owl:sameAs wd:Q415081 .
+
+med:doxycycline owl:sameAs wd:Q422442 .
+
+med:dyspnea owl:sameAs wd:Q188008 .
+
+med:dysuria owl:sameAs wd:Q1269399 .
+
+med:ect owl:sameAs wd:Q3375004 .
+
+med:eczema owl:sameAs wd:Q229256 .
+
+med:edema owl:sameAs wd:Q37573809 .
+
+med:electroconvulsive_therapy owl:sameAs wd:Q131543 .
+
+med:emergency_medicine owl:sameAs wd:Q2861470 .
+
+med:emphysema owl:sameAs wd:Q188605 .
+
+med:endocrinologist owl:sameAs wd:Q4531850 .
+
+med:epilepsy owl:sameAs wd:Q41571 .
+
+med:escitalopram owl:sameAs wd:Q423757 .
+
+med:etanercept owl:sameAs wd:Q415343 .
+
+med:family_medicine owl:sameAs wd:Q15817325 .
+
+med:fatigue owl:sameAs wd:Q9690 .
+
+med:fatty_liver_disease owl:sameAs wd:Q6058862 .
+
+med:fever owl:sameAs wd:Q64355201 .
+
+med:fibromyalgia owl:sameAs wd:Q540571 .
+
+med:flu owl:sameAs wd:Q2840 .
+
+med:fluoxetine owl:sameAs wd:Q422244 .
+
+med:furosemide owl:sameAs wd:Q388801 .
+
+med:gestational_diabetes owl:sameAs wd:Q126691 .
+
+med:glaucoma owl:sameAs wd:Q159701 .
+
+med:gout owl:sameAs wd:Q133087 .
+
+med:haloperidol owl:sameAs wd:Q251347 .
+
+med:headache owl:sameAs wd:Q86 .
+
+med:heart_attack owl:sameAs wd:Q12152 .
+
+med:heart_failure owl:sameAs wd:Q181754 .
+
+med:heart_transplant owl:sameAs wd:Q643396 .
+
+med:hemodialysis owl:sameAs wd:Q391744 .
+
+med:hemoptysis owl:sameAs wd:Q647099 .
+
+med:hemorrhagic_stroke owl:sameAs wd:Q114754301 .
+
+med:heparin owl:sameAs wd:Q190016 .
+
+med:hepatitis owl:sameAs wd:Q708693 .
+
+med:hepatitis_b owl:sameAs wd:Q6844 .
+
+med:hepatitis_c owl:sameAs wd:Q154869 .
+
+med:high_blood_pressure owl:sameAs wd:Q41861 .
+
+med:hiv owl:sameAs wd:Q15787 .
+
+med:hives owl:sameAs wd:Q187440 .
+
+med:hormone_replacement_therapy owl:sameAs wd:Q3354346 .
+
+med:hormone_therapy owl:sameAs wd:Q1628266 .
+
+med:hydrocortisone owl:sameAs wd:Q190875 .
+
+med:hydroxychloroquine owl:sameAs wd:Q421094 .
+
+med:hypertension owl:sameAs wd:Q41861 .
+
+med:hyperthyroidism owl:sameAs wd:Q16499 .
+
+med:hypothyroidism owl:sameAs wd:Q16501 .
+
+med:ibuprofen owl:sameAs wd:Q186969 .
+
+med:immunology owl:sameAs wd:Q101929 .
+
+med:immunotherapy owl:sameAs wd:Q1427096 .
+
+med:infectious_disease_specialist owl:sameAs wd:Q11494960 .
+
+med:inflammation owl:sameAs wd:Q101991 .
+
+med:infliximab owl:sameAs wd:Q415264 .
+
+med:influenza owl:sameAs wd:Q2840 .
+
+med:insomnia owl:sameAs wd:Q1869874 .
+
+med:insulin owl:sameAs wd:Q50265665 .
+
+med:internal_medicine owl:sameAs wd:Q11180 .
+
+med:irritability owl:sameAs wd:Q29299 .
+
+med:ischemic_stroke owl:sameAs wd:Q107538694 .
+
+med:itching owl:sameAs wd:Q199602 .
+
+med:jaundice owl:sameAs wd:Q133244 .
+
+med:kidney_failure owl:sameAs wd:Q476921 .
+
+med:kidney_transplant owl:sameAs wd:Q740909 .
+
+med:laser_therapy owl:sameAs wd:Q26842101 .
+
+med:leukemia owl:sameAs wd:Q29496 .
+
+med:levodopa owl:sameAs wd:Q300989 .
+
+med:light_therapy owl:sameAs wd:Q243570 .
+
+med:liver_disease owl:sameAs wd:Q929737 .
+
+med:liver_transplant owl:sameAs wd:Q1368191 .
+
+med:loss_of_appetite owl:sameAs wd:Q254327 .
+
+med:lung_cancer owl:sameAs wd:Q47912 .
+
+med:lupus owl:sameAs wd:Q10571 .
+
+med:lymphoma owl:sameAs wd:Q208414 .
+
+med:major_depressive_disorder owl:sameAs wd:Q42844 .
+
+med:malaria owl:sameAs wd:Q12156 .
+
+med:mechanical_ventilation owl:sameAs wd:Q3766250 .
+
+med:melanoma owl:sameAs wd:Q180614 .
+
+med:memantine owl:sameAs wd:Q412189 .
+
+med:memory_loss owl:sameAs wd:Q989365 .
+
+med:metformin owl:sameAs wd:Q19484 .
+
+med:methotrexate owl:sameAs wd:Q422232 .
+
+med:metronidazole owl:sameAs wd:Q169569 .
+
+med:migraine owl:sameAs wd:Q133823 .
+
+med:montelukast owl:sameAs wd:Q417767 .
+
+med:mood_swings owl:sameAs wd:Q138189690 .
+
+med:multiple_sclerosis owl:sameAs wd:Q8277 .
+
+med:muscle_weakness owl:sameAs wd:Q270421 .
+
+med:myocardial_infarction owl:sameAs wd:Q12152 .
+
+med:naproxen owl:sameAs wd:Q1215575 .
+
+med:nausea owl:sameAs wd:Q186889 .
+
+med:nephrologist owl:sameAs wd:Q20739489 .
+
+med:neurologist owl:sameAs wd:Q783906 .
+
+med:neurology owl:sameAs wd:Q1161692 .
+
+med:neurosurgery owl:sameAs wd:Q188449 .
+
+med:night_sweats owl:sameAs wd:Q474718 .
+
+med:numbness owl:sameAs wd:Q1641556 .
+
+med:obesity owl:sameAs wd:Q12174 .
+
+med:occupational_therapy owl:sameAs wd:Q380141 .
+
+med:olanzapine owl:sameAs wd:Q201872 .
+
+med:omeprazole owl:sameAs wd:Q422210 .
+
+med:oncology owl:sameAs wd:Q162555 .
+
+med:ophthalmologist owl:sameAs wd:Q12013238 .
+
+med:opioid owl:sameAs wd:Q427523 .
+
+med:opioids owl:sameAs wd:Q427523 .
+
+med:osteoporosis owl:sameAs wd:Q165328 .
+
+med:oxygen_therapy owl:sameAs wd:Q1988216 .
+
+med:palpitations owl:sameAs wd:Q1123260 .
+
+med:paracetamol owl:sameAs wd:Q57055 .
+
+med:paresthesia owl:sameAs wd:Q769220 .
+
+med:parkinson_disease owl:sameAs wd:Q11085 .
+
+med:paroxetine owl:sameAs wd:Q408471 .
+
+med:pathologist owl:sameAs wd:Q3368718 .
+
+med:pathology owl:sameAs wd:Q7208 .
+
+med:pediatrician owl:sameAs wd:Q1919436 .
+
+med:pediatrics owl:sameAs wd:Q7159238 .
+
+med:penicillin owl:sameAs wd:Q12190 .
+
+med:physical_therapy owl:sameAs wd:Q15763171 .
+
+med:physiotherapy owl:sameAs wd:Q15750416 .
+
+med:pneumonia owl:sameAs wd:Q12192 .
+
+med:polydipsia owl:sameAs wd:Q635195 .
+
+med:polyphagia owl:sameAs wd:Q653267 .
+
+med:polyuria owl:sameAs wd:Q1124286 .
+
+med:prednisone owl:sameAs wd:Q424972 .
+
+med:propranolol owl:sameAs wd:Q423364 .
+
+med:prostate_cancer owl:sameAs wd:Q181257 .
+
+med:psychiatrist owl:sameAs wd:Q211346 .
+
+med:psychiatry owl:sameAs wd:Q7867 .
+
+med:psychotherapy owl:sameAs wd:Q183257 .
+
+med:radiation_therapy owl:sameAs wd:Q180507 .
+
+med:radiology owl:sameAs wd:Q3285690 .
+
+med:radiotherapy owl:sameAs wd:Q180507 .
+
+med:rash owl:sameAs wd:Q16875296 .
+
+med:rehabilitation owl:sameAs wd:Q2428433 .
+
+med:renal_failure owl:sameAs wd:Q476921 .
+
+med:rheumatoid_arthritis owl:sameAs wd:Q187255 .
+
+med:rigidity owl:sameAs wd:Q569057 .
+
+med:risperidone owl:sameAs wd:Q412443 .
+
+med:salbutamol owl:sameAs wd:Q410358 .
+
+med:schizophrenia owl:sameAs wd:Q41112 .
+
+med:seizure owl:sameAs wd:Q6279182 .
+
+med:sepsis owl:sameAs wd:Q183134 .
+
+med:sertraline owl:sameAs wd:Q407617 .
+
+med:shortness_of_breath owl:sameAs wd:Q188008 .
+
+med:sitagliptin owl:sameAs wd:Q419832 .
+
+med:sleep_disturbance owl:sameAs wd:Q102187069 .
+
+med:spironolactone owl:sameAs wd:Q422188 .
+
+med:statin owl:sameAs wd:Q954845 .
+
+med:statins owl:sameAs wd:Q954845 .
+
+med:stem_cell_therapy owl:sameAs wd:Q1533033 .
+
+med:stent_placement owl:sameAs wd:Q64805291 .
+
+med:stenting owl:sameAs wd:Q64625142 .
+
+med:stroke owl:sameAs wd:Q12202 .
+
+med:surgeon owl:sameAs wd:Q774306 .
+
+med:surgery owl:sameAs wd:Q40821 .
+
+med:surgical_resection owl:sameAs wd:Q62040976 .
+
+med:swelling owl:sameAs wd:Q152234 .
+
+med:systemic_lupus_erythematosus owl:sameAs wd:Q1485 .
+
+med:tachycardia owl:sameAs wd:Q209583 .
+
+med:targeted_therapy owl:sameAs wd:Q492646 .
+
+med:thalassemia owl:sameAs wd:Q185137 .
+
+med:thyroid_disease owl:sameAs wd:Q6673122 .
+
+med:tingling owl:sameAs wd:Q37531349 .
+
+med:tiotropium owl:sameAs wd:Q424316 .
+
+med:trastuzumab owl:sameAs wd:Q412616 .
+
+med:tremor owl:sameAs wd:Q7944 .
+
+med:tuberculosis owl:sameAs wd:Q12204 .
+
+med:type_1_diabetes owl:sameAs wd:Q124407 .
+
+med:type_2_diabetes owl:sameAs wd:Q3025883 .
+
+med:ulcerative_colitis owl:sameAs wd:Q1477 .
+
+med:venlafaxine owl:sameAs wd:Q898407 .
+
+med:verapamil owl:sameAs wd:Q410291 .
+
+med:vertigo owl:sameAs wd:Q2531983 .
+
+med:vision_loss owl:sameAs wd:Q507787 .
+
+med:vomiting owl:sameAs wd:Q127076 .
+
+med:warfarin owl:sameAs wd:Q113368879 .
+
+med:weight_gain owl:sameAs wd:Q3403879 .
+
+med:weight_loss owl:sameAs wd:Q718113 .
+
+med:hasMedication owl:equivalentProperty wdt:P2176 .
+
+med:hasSymptom owl:equivalentProperty wdt:P780 .
+
+med:hasTreatment owl:equivalentProperty wdt:P924 .
+
+med:treatedBy owl:equivalentProperty wdt:P1995 .
+
+wdt:P1995 owl:equivalentProperty med:treatedBy .
+
+wdt:P2176 owl:equivalentProperty med:hasMedication .
+
+wdt:P780 owl:equivalentProperty med:hasSymptom .
+
+wdt:P924 owl:equivalentProperty med:hasTreatment .
+
