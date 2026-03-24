@@ -88,7 +88,7 @@ MED = Namespace("http://medkg.local/")
 # Section 1 - ask_local_llm
 # ==============================================================================
 
-def ask_local_llm(prompt: str, model: str = MODEL, timeout: int = 120) -> str:
+def ask_local_llm(prompt: str, model: str = MODEL, timeout: int = 300) -> str:
     """
     Send *prompt* to an Ollama model and return the full response text.
 
@@ -351,7 +351,7 @@ Rules:
    string patterns (entity URIs are usually snake_cased, e.g. med:Diabetes).
 6. Select meaningful variable names and add LIMIT 50 to avoid huge results.
 7. If the question cannot be answered from this graph, output:
-       SELECT ?nothing WHERE { FILTER(false) }
+       SELECT ?nothing WHERE {{ FILTER(false) }}
 
 Schema:
 {schema}

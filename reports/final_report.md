@@ -242,9 +242,16 @@ endpoint** (`query.wikidata.org`) for each aligned entity:
    URIs, and non-English string literals.
 
 **Final KB statistics** (typical run):
-- Total triples: 50,000–200,000
-- Unique entities: 5,000–30,000
-- Unique relations: 50–200
+| Metric | Value |
+|--------|-------|
+| Initial KB triples (from NER) | 1,986 |
+| Entity-linked triples | 2,255 (+ 269 alignment) |
+| After 1-hop SPARQL expansion | 8,721 |
+| After bulk predicate expansion | **117,579** |
+| Unique entities | **75,472** |
+| Unique relations | **27** |
+| Entities linked to Wikidata | 261 / 261 (100%) |
+| KGE train / valid / test | 105,134 / 5,921 / 5,975 |
 
 ---
 

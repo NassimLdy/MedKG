@@ -60,11 +60,16 @@ MedKG/
 
 ### 1. Create a virtual environment and install dependencies
 
+> **Important:** PyKEEN requires **Python 3.10**. Python 3.11+ also works.
+> Python 3.14 is **not** supported (numpy/torch incompatibility).
+
 ```bash
-python -m venv .venv
-# Windows
+# Windows — use py launcher to select Python 3.10
+py -3.10 -m venv .venv
 .venv\Scripts\activate
+
 # Linux/macOS
+python3.10 -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
@@ -93,7 +98,7 @@ You can use any model supported by Ollama (e.g. `deepseek-r1:1.5b`, `mistral`).
 
 | Requirement | Minimum | Recommended |
 |-------------|---------|-------------|
-| Python | 3.9+ | 3.11+ |
+| Python | **3.10** (required for KGE) | 3.10–3.12 |
 | RAM | 4 GB | 8 GB |
 | GPU | Optional | For KGE training |
 | Disk | 2 GB | 5 GB (for expanded KB) |
