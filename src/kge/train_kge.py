@@ -70,11 +70,11 @@ def extract_metrics(results) -> dict:
 # Training configuration
 # ---------------------------------------------------------------------------
 
-EMBEDDING_DIM = 100
+EMBEDDING_DIM = 50       # reduced to fit in RAM (75k entities)
 NUM_EPOCHS = 100
-BATCH_SIZE = 256
+BATCH_SIZE = 512         # larger batch = fewer allocs = less peak memory
 LEARNING_RATE = 0.01
-NUM_NEGS_PER_POS = 10
+NUM_NEGS_PER_POS = 5    # reduced to save memory during negative sampling
 
 MODEL_CONFIGS = {
     "TransE": {
@@ -197,7 +197,7 @@ def main() -> None:
                     "batch_size": BATCH_SIZE,
                 },
                 evaluator="RankBasedEvaluator",
-                evaluator_kwargs={"filtered": True},
+                evaluator_kwargs={"filtered": True, "batch_size": 32},
                 random_seed=42,
                 device="cpu",
             )
@@ -310,7 +310,7 @@ def main() -> None:
                 negative_sampler_kwargs={"num_negs_per_pos": NUM_NEGS_PER_POS},
                 training_kwargs={"num_epochs": 50, "batch_size": BATCH_SIZE},
                 evaluator="RankBasedEvaluator",
-                evaluator_kwargs={"filtered": True},
+                evaluator_kwargs={"filtered": True, "batch_size": 32},
                 random_seed=42,
                 device="cpu",
             )

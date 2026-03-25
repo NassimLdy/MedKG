@@ -107,18 +107,40 @@ def short_uri(uri: str, max_len: int = 55) -> str:
     return fragment[:max_len] + "..."
 
 
-def load_pipeline_result(model_dir: str) -> PipelineResult:
-    """Load a saved PipelineResult from directory."""
-    return PipelineResult.from_directory(model_dir)
+def load_pipeline_result(model_dir: str):
+    """Load a saved model from directory using torch.load on trained_model.pkl."""
+    import json
+    model_pkl = os.path.join(model_dir, "trained_model.pkl")
+    training_dir = os.path.join(model_dir, "training_triples")
+
+    model = torch.load(model_pkl, map_location="cpu", weights_only=False)
+
+    # Load entity/relation mappings from the training triples factory
+    tf = TriplesFactory.from_path(os.path.join(training_dir, "new_to_old_ids.tsv.gz"),
+                                   ) if False else None
+    # Use metadata.json to get mapping files
+    meta_path = os.path.join(model_dir, "metadata.json")
+    with open(meta_path) as f:
+        meta = json.load(f)
+
+    # Load the training triples factory directly
+    # model_dir is e.g. .../MedKG/results/TransE/ → root is 3 levels up
+    _root = os.path.dirname(os.path.dirname(os.path.dirname(model_dir)))
+    train_factory = TriplesFactory.from_path(
+        os.path.join(_root, "data", "kge", "train.txt")
+    )
+    # Attach to a simple namespace for compatibility
+    class _Result:
+        pass
+    r = _Result()
+    r.model = model
+    r.training = train_factory
+    return r
 
 
-def get_entity_embeddings(result: PipelineResult) -> tuple[np.ndarray, dict, dict]:
-    """
-    Extract entity embedding matrix, entity_to_id, id_to_entity mappings.
-    Returns (embeddings_np, entity_to_id, id_to_entity).
-    """
+def get_entity_embeddings(result) -> tuple[np.ndarray, dict, dict]:
+    """Extract entity embedding matrix from loaded model."""
     model = result.model
-    # Different model attribute names across pykeen versions
     if hasattr(model, "entity_representations"):
         emb_module = model.entity_representations[0]
         emb_weight = emb_module._embeddings.weight.detach().cpu().numpy()
@@ -132,8 +154,8 @@ def get_entity_embeddings(result: PipelineResult) -> tuple[np.ndarray, dict, dic
     return emb_weight, entity_to_id, id_to_entity
 
 
-def get_relation_embeddings(result: PipelineResult) -> tuple[np.ndarray, dict, dict]:
-    """Extract relation embedding matrix."""
+def get_relation_embeddings(result) -> tuple[np.ndarray, dict, dict]:
+    """Extract relation embedding matrix from loaded model."""
     model = result.model
     if hasattr(model, "relation_representations"):
         emb_module = model.relation_representations[0]
@@ -268,7 +290,7 @@ def tsne_clustering(
         n_components=2,
         perplexity=TSNE_PERPLEXITY,
         random_state=TSNE_RANDOM_STATE,
-        n_iter=1000,
+        max_iter=1000,
         init="pca",
     )
     coords = tsne.fit_transform(sampled_embeddings)

@@ -68,7 +68,7 @@ TTL_FILE = _find_default_graph()
 # ---------------------------------------------------------------------------
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "gemma:2b"
+MODEL = "deepseek-r1:1.5b"
 
 # ---------------------------------------------------------------------------
 # Schema-summary tuning parameters
@@ -384,19 +384,24 @@ def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
 
 def _extract_sparql_block(text: str) -> str:
     """
-    Strip markdown code fences and leading/trailing whitespace from *text*.
-    The LLM sometimes wraps its output in ```sparql ... ``` blocks despite
-    being asked not to.
+    Extract a SPARQL query from an LLM response that may contain:
+    - Raw SPARQL (ideal)
+    - Markdown code fences: ```sparql ... ```
+    - Prose prefix: "Here is the query: SELECT ..."
     """
+    import re
     text = text.strip()
-    # Remove ```sparql ... ``` or ``` ... ```
-    if text.startswith("```"):
-        lines = text.splitlines()
-        # Drop first line (```sparql or ```) and last line (```)
-        inner = lines[1:] if len(lines) > 1 else lines
-        if inner and inner[-1].strip() == "```":
-            inner = inner[:-1]
-        text = "\n".join(inner).strip()
+
+    # 1. Try to extract from ```sparql...``` or ```...``` block
+    fence = re.search(r"```(?:sparql|sql|SPARQL)?\s*(.*?)```", text, re.DOTALL)
+    if fence:
+        return fence.group(1).strip()
+
+    # 2. Find first occurrence of SELECT / ASK / CONSTRUCT / DESCRIBE
+    kw = re.search(r"\b(SELECT|ASK|CONSTRUCT|DESCRIBE)\b", text, re.IGNORECASE)
+    if kw:
+        return text[kw.start():].strip()
+
     return text
 
 
