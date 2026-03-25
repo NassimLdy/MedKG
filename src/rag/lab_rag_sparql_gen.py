@@ -332,30 +332,28 @@ def _shorten_uri(uri: str) -> str:
 
 # ---------------------------------------------------------------------------
 # System instruction injected before every SPARQL-generation call.
+# Kept intentionally short so small models (1-2 B) can follow it reliably.
 # ---------------------------------------------------------------------------
-SPARQL_INSTRUCTIONS = """
-You are a SPARQL expert working with a medical knowledge graph.
-The graph is stored under the namespace http://medkg.local/ and describes
-diseases, their symptoms, treatments, medications, and medical specialties.
-
-Your task: convert the user's natural-language question into a single, valid
-SPARQL SELECT query that answers it using the schema below.
-
-Rules:
-1. Output ONLY the raw SPARQL query - no prose, no markdown fences, no explanation.
-2. Always declare all PREFIX lines at the top of the query.
-3. Use only the predicates and classes that appear in the schema.
-4. Prefer med:hasSymptom, med:hasTreatment, med:hasMedication, med:treatedBy
-   for medical relationships.
-5. Use FILTER(CONTAINS(LCASE(STR(?x)), "keyword")) when matching names as
-   string patterns (entity URIs are usually snake_cased, e.g. med:Diabetes).
-6. Select meaningful variable names and add LIMIT 50 to avoid huge results.
-7. If the question cannot be answered from this graph, output:
-       SELECT ?nothing WHERE {{ FILTER(false) }}
-
-Schema:
-{schema}
-""".strip()
+SPARQL_INSTRUCTIONS = (
+    "You generate SPARQL queries. Output ONLY the SPARQL query. No explanation. No markdown.\n\n"
+    "Prefixes:\n"
+    "  PREFIX med: <http://medkg.local/>\n"
+    "  PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+    "  PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n\n"
+    "Important: med: entities link to Wikidata via owl:sameAs.\n"
+    "Use wdt:P780 (symptom), wdt:P2176 (drug), wdt:P2175 (treatment), wdt:P1995 (specialty).\n\n"
+    "EXAMPLE — \"What are the symptoms of Diabetes?\":\n"
+    "PREFIX med: <http://medkg.local/>\n"
+    "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+    "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n"
+    "SELECT ?symptom WHERE {{\n"
+    "  ?disease owl:sameAs ?wd .\n"
+    "  ?wd wdt:P780 ?symptom .\n"
+    "  FILTER(CONTAINS(LCASE(STR(?disease)), \"diabetes\"))\n"
+    "}} LIMIT 20\n\n"
+    "Question: {question}\n"
+    "SPARQL:"
+)
 
 
 def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
@@ -365,7 +363,7 @@ def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
     Parameters
     ----------
     question : natural-language question from the user
-    schema   : schema summary produced by build_schema_summary()
+    schema   : unused (kept for API compatibility - prompt is now self-contained)
     model    : Ollama model tag
 
     Returns
@@ -373,8 +371,7 @@ def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
     A SPARQL query string (may still contain syntax errors - that is handled
     by run_sparql with the self-repair loop).
     """
-    instructions = SPARQL_INSTRUCTIONS.format(schema=schema)
-    prompt = f"{instructions}\n\nQuestion: {question}\n\nSPARQL:"
+    prompt = SPARQL_INSTRUCTIONS.format(question=question)
     return ask_local_llm(prompt, model=model)
 
 
@@ -382,12 +379,24 @@ def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
 # Section 5 - run_sparql  (with self-repair loop)
 # ==============================================================================
 
+_STD_PREFIXES = (
+    "PREFIX med:  <http://medkg.local/>\n"
+    "PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+    "PREFIX wdt:  <http://www.wikidata.org/prop/direct/>\n"
+    "PREFIX wd:   <http://www.wikidata.org/entity/>\n"
+)
+
+
 def _extract_sparql_block(text: str) -> str:
     """
     Extract a SPARQL query from an LLM response that may contain:
     - Raw SPARQL (ideal)
     - Markdown code fences: ```sparql ... ```
     - Prose prefix: "Here is the query: SELECT ..."
+
+    Also auto-prepends standard prefixes if the query is missing them,
+    so small models that forget PREFIX declarations still work.
     """
     import re
     text = text.strip()
@@ -395,14 +404,17 @@ def _extract_sparql_block(text: str) -> str:
     # 1. Try to extract from ```sparql...``` or ```...``` block
     fence = re.search(r"```(?:sparql|sql|SPARQL)?\s*(.*?)```", text, re.DOTALL)
     if fence:
-        return fence.group(1).strip()
+        sparql = fence.group(1).strip()
+    else:
+        # 2. Find first occurrence of PREFIX / SELECT / ASK / CONSTRUCT / DESCRIBE
+        kw = re.search(r"\b(PREFIX|SELECT|ASK|CONSTRUCT|DESCRIBE)\b", text, re.IGNORECASE)
+        sparql = text[kw.start():].strip() if kw else text
 
-    # 2. Find first occurrence of SELECT / ASK / CONSTRUCT / DESCRIBE
-    kw = re.search(r"\b(SELECT|ASK|CONSTRUCT|DESCRIBE)\b", text, re.IGNORECASE)
-    if kw:
-        return text[kw.start():].strip()
+    # 3. Auto-inject standard prefixes if the query doesn't declare any
+    if "PREFIX" not in sparql.upper():
+        sparql = _STD_PREFIXES + sparql
 
-    return text
+    return sparql
 
 
 def run_sparql(
@@ -434,14 +446,34 @@ def run_sparql(
     """
     sparql_clean = _extract_sparql_block(sparql_text)
 
-    # --- First attempt ---
+    # --- Template-first: try hand-crafted SPARQL before the LLM query ---
+    # The template uses the correct owl:sameAs+wdt: join and is always valid.
+    template = _template_sparql(question)
+    if template:
+        try:
+            result = g.query(template)
+            rows = [
+                {str(var): str(val) for var, val in zip(result.vars, row)}
+                for row in result
+            ]
+            if rows:
+                print(f"[INFO] Template SPARQL succeeded ({len(rows)} results).")
+                return rows, template
+        except Exception:
+            pass  # template failed (shouldn't happen) — continue to LLM query
+
+    # --- First attempt (LLM-generated) ---
     try:
         result = g.query(sparql_clean)
         rows = [
             {str(var): str(val) for var, val in zip(result.vars, row)}
             for row in result
         ]
-        return rows, sparql_clean
+        if rows:
+            return rows, sparql_clean
+        # LLM query ran but returned nothing — fall through to repair / fallback
+        print("[INFO] LLM SPARQL returned no results, trying repair ...")
+        raise Exception("empty result set")
 
     except Exception as first_error:
         if not enable_repair:
@@ -490,7 +522,152 @@ Corrected SPARQL:
 
         except Exception as second_error:
             print(f"[SPARQL ERROR] Repair attempt also failed: {second_error}")
-            return [], repaired_clean
+            # --- Keyword fallback: search graph by entity name ---
+            print("[INFO] SPARQL failed — falling back to keyword search ...")
+            fallback_rows = keyword_fallback(g, question)
+            if fallback_rows:
+                print(f"[INFO] Keyword fallback returned {len(fallback_rows)} results.")
+            return fallback_rows, repaired_clean
+
+
+# ==============================================================================
+# Section 5b - _template_sparql  (pattern-based SPARQL without LLM)
+# ==============================================================================
+
+def _template_sparql(question: str) -> Optional[str]:
+    """
+    Generate a valid SPARQL query from hand-crafted patterns, bypassing the LLM.
+    Handles the most common question forms reliably.
+
+    Returns None if no pattern matches.
+    """
+    import re
+    q = question.lower().strip().rstrip("?.")
+
+    # Maps question pattern → (wdt predicate, result variable name)
+    # Uses wdt: predicates which are bulk-loaded from Wikidata (thousands of triples)
+    # and linked via owl:sameAs: med:Disease owl:sameAs wd:Qxxx wdt:Pyyy wd:Qresult
+    _PATTERNS = [
+        (r"symptoms?\s+of\s+(.+)",
+            "P780", "symptom"),
+        (r"what\s+(?:are\s+)?symptoms?\s+(?:of|for)\s+(.+)",
+            "P780", "symptom"),
+        (r"medications?\s+(?:for|used\s+to\s+treat)\s+(.+)",
+            "P2176", "medication"),
+        (r"(?:drug|drugs|medicine|medicines?)\s+(?:for|used\s+for)\s+(.+)",
+            "P2176", "medication"),
+        (r"treatments?\s+(?:for|of|available\s+for)\s+(.+)",
+            "P2175", "treatment"),
+        (r"what\s+treat[s]?\s+(.+)",
+            "P2175", "treatment"),
+        (r"specialty\s+(?:for|that\s+handles?|handling)\s+(.+)",
+            "P1995", "specialty"),
+        (r"which\s+(?:medical\s+)?specialty\s+handles?\s+(.+)",
+            "P1995", "specialty"),
+        (r"related\s+condition[s]?\s+(?:to\s+)?(.+)",
+            "P780",  "related"),
+    ]
+    for pattern, wdt_prop, result_var in _PATTERNS:
+        m = re.search(pattern, q)
+        if m:
+            entity = m.group(1).strip()
+            entity = re.sub(r"\s+(?:disease|condition|disorder|syndrome)$", "", entity).strip()
+            # Join med: entity → owl:sameAs → Wikidata entity → wdt:Pxxx → result
+            return (
+                "PREFIX med:  <http://medkg.local/>\n"
+                "PREFIX owl:  <http://www.w3.org/2002/07/owl#>\n"
+                "PREFIX wdt:  <http://www.wikidata.org/prop/direct/>\n"
+                f"SELECT DISTINCT ?{result_var} ?obo WHERE {{\n"
+                f"  ?disease owl:sameAs ?wd .\n"
+                f"  ?wd wdt:{wdt_prop} ?{result_var} .\n"
+                f"  OPTIONAL {{ ?{result_var} wdt:P2888 ?obo }}\n"
+                f'  FILTER(CONTAINS(LCASE(STR(?disease)), "{entity}"))\n'
+                f"}} LIMIT 20"
+            )
+    return None
+
+
+# ==============================================================================
+# Section 5c - keyword_fallback
+# ==============================================================================
+
+def keyword_fallback(g: Graph, question: str) -> list[dict]:
+    """
+    Simple keyword search on the graph used when SPARQL generation fails.
+
+    Extracts meaningful words from *question*, finds med: entities whose URI
+    contains one of those words, and returns their med: predicate/value pairs.
+
+    Parameters
+    ----------
+    g        : loaded rdflib.Graph
+    question : natural-language question
+
+    Returns
+    -------
+    List of dicts with keys 'entity', 'relation', 'value'.
+    """
+    import re
+
+    stopwords = {
+        "what", "are", "the", "of", "which", "is", "a", "an", "have", "has",
+        "do", "does", "how", "when", "where", "who", "why", "that", "this",
+        "used", "treat", "treating", "available", "for", "to", "in", "by",
+        "with", "related", "condition", "disease", "symptom", "treatment",
+        "medication", "specialty", "medical", "handle", "handles",
+    }
+    words = [w.lower() for w in re.findall(r"\b[a-zA-Z]+\b", question)]
+    keywords = [w for w in words if w not in stopwords and len(w) > 3]
+    if not keywords:
+        return []
+
+    MED_NS  = "http://medkg.local/"
+    WDT_NS  = "http://www.wikidata.org/prop/direct/"
+    # Medical predicates we actually care about for answers
+    USEFUL_PREDS = {
+        MED_NS + "hasSymptom", MED_NS + "hasTreatment",
+        MED_NS + "hasMedication", MED_NS + "treatedBy",
+        WDT_NS + "P780",  # symptom
+        WDT_NS + "P924",  # health specialty
+        WDT_NS + "P2176", # drug used for treatment
+        WDT_NS + "P1995", # health specialty
+    }
+    results = []
+
+    for kw in keywords[:3]:
+        # Find med: subjects whose URI contains the keyword
+        matching = [
+            s for s in g.subjects()
+            if str(s).startswith(MED_NS) and kw in str(s).lower()
+        ]
+        # First pass: only useful medical predicates
+        for subj in matching[:10]:
+            for p, o in g.predicate_objects(subj):
+                if str(p) in USEFUL_PREDS:
+                    results.append({
+                        "entity":   str(subj).replace(MED_NS, ""),
+                        "relation": str(p).replace(MED_NS, "").replace(WDT_NS, "wdt:"),
+                        "value":    str(o).replace(MED_NS, ""),
+                    })
+                    if len(results) >= 25:
+                        return results
+        if results:
+            return results
+        # Second pass: any med: predicate (broader fallback)
+        for subj in matching[:5]:
+            for p, o in g.predicate_objects(subj):
+                if str(p).startswith(MED_NS):
+                    results.append({
+                        "entity":   str(subj).replace(MED_NS, ""),
+                        "relation": str(p).replace(MED_NS, ""),
+                        "value":    str(o).replace(MED_NS, ""),
+                    })
+                    if len(results) >= 25:
+                        return results
+        if results:
+            return results
+
+    return results
 
 
 # ==============================================================================
@@ -525,9 +702,10 @@ def answer_no_rag(question: str, model: str = MODEL) -> str:
 # ==============================================================================
 
 def _fmt_results(rows: list[dict]) -> str:
-    """Pretty-print SPARQL result rows as a readable string."""
+    """Pretty-print SPARQL or keyword-fallback result rows as a readable string."""
     if not rows:
         return "(no results)"
+
     # Collect all variable names, preserving order of first occurrence
     all_vars: list[str] = []
     for row in rows:
@@ -535,11 +713,13 @@ def _fmt_results(rows: list[dict]) -> str:
             if k not in all_vars:
                 all_vars.append(k)
 
-    # Shorten med: URIs for readability
+    # Shorten known URIs for readability
     def clean(val: str) -> str:
-        if val.startswith("http://medkg.local/"):
-            return val.replace("http://medkg.local/", "")
-        return val
+        return (
+            val.replace("http://medkg.local/", "")
+               .replace("http://www.wikidata.org/entity/", "wd:")
+               .replace("http://purl.obolibrary.org/obo/", "obo:")
+        )
 
     lines = []
     for row in rows:
