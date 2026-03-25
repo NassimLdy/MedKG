@@ -453,7 +453,7 @@ def run_sparql(
         try:
             result = g.query(template)
             rows = [
-                {str(var): str(val) for var, val in zip(result.vars, row)}
+                {str(var): str(val) for var, val in zip(result.vars, row) if val is not None}
                 for row in result
             ]
             if rows:
@@ -548,24 +548,25 @@ def _template_sparql(question: str) -> Optional[str]:
     # Uses wdt: predicates which are bulk-loaded from Wikidata (thousands of triples)
     # and linked via owl:sameAs: med:Disease owl:sameAs wd:Qxxx wdt:Pyyy wd:Qresult
     _PATTERNS = [
-        (r"symptoms?\s+of\s+(.+)",
-            "P780", "symptom"),
-        (r"what\s+(?:are\s+)?symptoms?\s+(?:of|for)\s+(.+)",
-            "P780", "symptom"),
-        (r"medications?\s+(?:for|used\s+to\s+treat)\s+(.+)",
+        # Symptoms
+        (r"symptoms?\s+of\s+(.+)",                                    "P780",  "symptom"),
+        (r"what\s+(?:are\s+)?(?:the\s+)?symptoms?\s+(?:of|for)\s+(.+)", "P780", "symptom"),
+        # Medications / drugs
+        (r"medications?\s+(?:are\s+)?(?:used\s+(?:to\s+)?)?(?:for|to\s+treat|that\s+treat)\s+(.+)",
             "P2176", "medication"),
-        (r"(?:drug|drugs|medicine|medicines?)\s+(?:for|used\s+for)\s+(.+)",
+        (r"what\s+medications?\s+(?:are\s+)?(?:used\s+(?:to\s+)?)?(?:for|to\s+treat|treat)\s+(.+)",
             "P2176", "medication"),
-        (r"treatments?\s+(?:for|of|available\s+for)\s+(.+)",
-            "P2175", "treatment"),
-        (r"what\s+treat[s]?\s+(.+)",
-            "P2175", "treatment"),
-        (r"specialty\s+(?:for|that\s+handles?|handling)\s+(.+)",
-            "P1995", "specialty"),
-        (r"which\s+(?:medical\s+)?specialty\s+handles?\s+(.+)",
-            "P1995", "specialty"),
-        (r"related\s+condition[s]?\s+(?:to\s+)?(.+)",
-            "P780",  "related"),
+        (r"(?:drug|drugs|medicine|medicines?)\s+(?:for|used\s+(?:for|to\s+treat))\s+(.+)",
+            "P2176", "medication"),
+        # Treatments (P2176 = drug used for treatment: disease → drug, direct)
+        (r"treatments?\s+(?:(?:are\s+)?available\s+for|for|of)\s+(.+)", "P2176", "treatment"),
+        (r"what\s+treats?\s+(.+)",                                      "P2176", "treatment"),
+        # Medical specialty
+        (r"which\s+(?:medical\s+)?specialty\s+(?:handles?|treats?)\s+(.+)", "P1995", "specialty"),
+        (r"(?:medical\s+)?specialty\s+(?:for|that\s+handles?)\s+(.+)",      "P1995", "specialty"),
+        # Related conditions
+        (r"(?:diseases?|conditions?)\s+(?:related\s+to|that\s+have)\s+(.+)\s+as",
+            "P780", "related"),
     ]
     for pattern, wdt_prop, result_var in _PATTERNS:
         m = re.search(pattern, q)
@@ -577,10 +578,12 @@ def _template_sparql(question: str) -> Optional[str]:
                 "PREFIX med:  <http://medkg.local/>\n"
                 "PREFIX owl:  <http://www.w3.org/2002/07/owl#>\n"
                 "PREFIX wdt:  <http://www.wikidata.org/prop/direct/>\n"
-                f"SELECT DISTINCT ?{result_var} ?obo WHERE {{\n"
+                f"SELECT DISTINCT ?result ?name WHERE {{\n"
                 f"  ?disease owl:sameAs ?wd .\n"
-                f"  ?wd wdt:{wdt_prop} ?{result_var} .\n"
-                f"  OPTIONAL {{ ?{result_var} wdt:P2888 ?obo }}\n"
+                f"  ?wd wdt:{wdt_prop} ?result .\n"
+                # Reverse sameAs: med:polyuria owl:sameAs wd:Q1124286 → readable slug
+                f"  OPTIONAL {{ ?medEnt owl:sameAs ?result .\n"
+                f"    BIND(REPLACE(STR(?medEnt), \"http://medkg.local/\", \"\") AS ?name) }}\n"
                 f'  FILTER(CONTAINS(LCASE(STR(?disease)), "{entity}"))\n'
                 f"}} LIMIT 20"
             )
@@ -695,6 +698,125 @@ def answer_no_rag(question: str, model: str = MODEL) -> str:
         f"Question: {question}\n\nAnswer:"
     )
     return ask_local_llm(prompt, model=model)
+
+
+# ==============================================================================
+# Section 6b - generate_answer  (RAG synthesis: graph results → clean text)
+# ==============================================================================
+
+def generate_answer(question: str, rows: list[dict], model: str = MODEL) -> str:
+    """
+    Synthesize a clean human-readable answer from raw SPARQL/fallback rows.
+
+    Extracts the most meaningful values from each row, formats them as a
+    bullet list, then asks the LLM to write one clear sentence.
+
+    Parameters
+    ----------
+    question : original natural-language question
+    rows     : result rows from run_sparql / keyword_fallback
+    model    : Ollama model tag
+
+    Returns
+    -------
+    A plain-English answer string.
+    """
+    import re
+
+    if not rows:
+        return "No relevant information was found in the knowledge graph."
+
+    # Classify each row's values: collect readable labels and count bare QIDs.
+    # Apply URI regex BEFORE underscore replacement so HP_0000103 stays intact.
+    readable: list[str] = []   # human-readable names (med: slugs, HP/SYMP codes)
+    qid_count = 0              # Wikidata QIDs with no readable label in the graph
+    relation_types: list[str] = []
+
+    for row in rows[:20]:
+        best: Optional[str] = None  # best readable label for this row
+        has_qid = False
+
+        for key, v in row.items():
+            if key not in relation_types:
+                relation_types.append(key)
+
+            hp   = re.search(r"obo/HP_(\d+)",      v)
+            symp = re.search(r"obo/SYMP_(\d+)",    v)
+            med  = re.search(r"medkg\.local/(.+)",  v)
+            qid  = re.search(r"entity/Q\d+",        v)
+
+            if hp:
+                cand: Optional[str] = f"HP:{hp.group(1)}"
+            elif symp:
+                cand = f"SYMP:{symp.group(1)}"
+            elif med:
+                cand = med.group(1).replace("_", " ")
+            elif qid:
+                has_qid = True
+                cand = None
+            elif not v.startswith("http") and v.strip() and v != "None":
+                cand = v.replace("_", " ").strip()
+            else:
+                cand = None
+
+            # Keep the first non-QID label found (HP preferred over nothing)
+            if cand and len(cand) > 1 and best is None:
+                best = cand
+
+        if best and best not in readable:
+            readable.append(best)
+        elif has_qid and best is None:
+            qid_count += 1
+
+    # ----------------------------------------------------------------
+    # Build the final answer — use LLM only with readable content.
+    # For bare QIDs we produce a deterministic count-based sentence.
+    # ----------------------------------------------------------------
+    # Use the most meaningful relation name, stripping internal suffixes
+    _raw_rel = (relation_types[0] if relation_types else "result").replace("_", " ")
+    rel_label = _raw_rel.replace("Qid", "").strip() or "result"
+
+    if readable:
+        # Readable labels available — build a deterministic sentence (no LLM, no hallucination)
+        items_str = ", ".join(v.replace("_", " ") for v in readable[:10])
+        # Map relation name → natural-language connector
+        # Also check the question itself for intent keywords
+        _rel_map = {
+            "symptom":    "symptoms include",
+            "name":       "items include",
+            "medication": "medications include",
+            "treatment":  "treatments include",
+            "specialty":  "medical specialty is",
+            "related":    "related conditions include",
+            "value":      "related items include",
+        }
+        q_lower = question.lower()
+        connector = "results include"
+        # Prefer question-based detection over variable-name detection
+        if "symptom" in q_lower:
+            connector = "symptoms include"
+        elif "medication" in q_lower or "drug" in q_lower:
+            connector = "medications include"
+        elif "treatment" in q_lower:
+            connector = "treatments include"
+        elif "specialty" in q_lower:
+            connector = "medical specialty is"
+        elif "related" in q_lower or "condition" in q_lower:
+            connector = "related conditions include"
+        else:
+            for key, phrase in _rel_map.items():
+                if key in rel_label.lower():
+                    connector = phrase
+                    break
+        return f"Based on the knowledge graph, {connector}: {items_str}."
+    else:
+        # Only Wikidata QIDs — deterministic count message
+        n = qid_count or len(rows)
+        return (
+            f"Based on the knowledge graph, {n} {rel_label}(s) were found "
+            f"for this query. They are stored as Wikidata entity identifiers "
+            f"(no human-readable labels in the local graph)."
+        )
 
 
 # ==============================================================================
@@ -815,7 +937,7 @@ def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> No
         print()
 
         # --- SPARQL-RAG ---
-        print("  >> SPARQL-RAG - generating SPARQL and querying knowledge graph ...")
+        print("  >> SPARQL-RAG - querying knowledge graph and generating answer ...")
         t1 = time.time()
         sparql_query = generate_sparql(question, schema, model=model)
         sparql_clean = _extract_sparql_block(sparql_query)
@@ -823,12 +945,11 @@ def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> No
             g, sparql_clean, question, schema,
             model=model, enable_repair=enable_repair,
         )
+        rag_answer = generate_answer(question, rows, model=model)
         rag_time = time.time() - t1
 
         print(f"  SPARQL-RAG ({rag_time:.1f}s):")
-        print(f"  Generated query:\n    {sparql_clean[:200].replace(chr(10), ' ')}")
-        print(f"  Results from KB:")
-        for line in _fmt_results(rows).splitlines():
+        for line in textwrap.wrap(rag_answer, width=68):
             print(f"    {line}")
 
         print()
@@ -884,19 +1005,19 @@ def interactive_loop(g: Graph, schema: str, model: str, enable_repair: bool) -> 
         print()
 
         # 2. SPARQL-RAG
-        print("[2/2] Generating SPARQL and querying knowledge graph ...")
+        print("[2/2] Querying knowledge graph ...")
         sparql_raw = generate_sparql(question, schema, model=model)
         sparql_clean = _extract_sparql_block(sparql_raw)
-
-        print(f"\nGenerated SPARQL:\n  {sparql_clean[:300].replace(chr(10), ' ')}")
 
         rows, final_sparql = run_sparql(
             g, sparql_clean, question, schema,
             model=model, enable_repair=enable_repair,
         )
 
-        print(f"\nSPARQL-RAG results from knowledge graph:\n")
-        print(_fmt_results(rows))
+        rag_answer = generate_answer(question, rows, model=model)
+        print(f"\nRAG answer (from knowledge graph):\n")
+        for line in textwrap.wrap(rag_answer, width=70):
+            print(f"  {line}")
 
         _print_separator()
         print()
