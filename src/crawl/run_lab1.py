@@ -14,7 +14,7 @@ import logging
 import sys
 from pathlib import Path
 
-# Ensure src/crawl/ and src/ie/ are on the path so sibling modules resolve correctly
+# Add src/crawl/ and src/ie/ to the path so imports work
 _THIS_DIR = Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parent
 sys.path.insert(0, str(_THIS_DIR))
@@ -51,7 +51,7 @@ def step_relations() -> None:
 
 
 def print_stats() -> None:
-    """Print a short summary of what was produced."""
+    """Print a summary of the output files."""
     print("\n=== Lab 1 Output Summary ===")
     for path in [CRAWLER_OUTPUT, NER_OUTPUT, TRIPLES_OUTPUT]:
         p = Path(path)

@@ -40,7 +40,7 @@ def banner(step: int, title: str) -> None:
 
 
 def run_script(script_path: str, extra_args: list[str] | None = None) -> bool:
-    """Run a Python script by absolute path. Returns True on success."""
+    """Run a Python script. Return True if it succeeds."""
     cmd = [sys.executable, script_path] + (extra_args or [])
     print(f"\n  Running: {' '.join(cmd)}\n")
     start = time.time()

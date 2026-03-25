@@ -2,12 +2,12 @@
 run_td4.py — Master Runner for TD4 Pipeline
 ============================================
 
-Executes all three TD4 steps in sequence:
-    1. Build initial KB from IE data         (build_kb.py logic)
-    2. Link entities to Wikidata             (entity_linking.py logic)
-    3. Expand KB via Wikidata SPARQL         (expand_kb.py logic)
+Runs all three TD4 steps in order:
+    1. Build the initial KB from IE data     (build_kb.py)
+    2. Link entities to Wikidata             (entity_linking.py)
+    3. Expand the KB using Wikidata SPARQL   (expand_kb.py)
 
-Each step can be skipped via a command-line flag.
+Each step can be skipped with a flag.
 
 Usage:
     python src/kg/run_td4.py
@@ -17,11 +17,11 @@ Usage:
     python src/kg/run_td4.py --skip-build --skip-link
 
 Flags:
-    --skip-build    Skip Step 1 (build_kb.py); requires medical_kb_initial.ttl
-    --skip-link     Skip Step 2 (entity_linking.py); requires alignment.ttl
-    --skip-expand   Skip Step 3 (expand_kb.py)
+    --skip-build    Skip Step 1; needs medical_kb_initial.ttl to exist
+    --skip-link     Skip Step 2; needs alignment.ttl to exist
+    --skip-expand   Skip Step 3
 
-After all steps, prints a summary table of all output files and their sizes.
+Prints a summary table of output files and sizes at the end.
 """
 
 import argparse
@@ -54,8 +54,8 @@ OUTPUT_FILES = {
 
 def load_module_from_file(name: str, file_path: Path):
     """
-    Dynamically import a Python module from *file_path* with module *name*.
-    Returns the module object. Raises SystemExit on failure.
+    Load a Python file as a module.
+    Return the module object, or exit if loading fails.
     """
     if not file_path.exists():
         sys.exit(f"Error: Script not found: {file_path}")
@@ -71,10 +71,8 @@ def load_module_from_file(name: str, file_path: Path):
 
 def run_step(step_num: int, description: str, module_path: Path) -> bool:
     """
-    Execute the ``main()`` function of the module at *module_path*.
-
-    Returns True on success, False on failure.
-    Prints a header and footer around the step.
+    Run the main() function of a pipeline step.
+    Return True if it succeeds, False if it fails.
     """
     print("\n" + "#" * 70)
     print(f"# STEP {step_num}: {description}")
@@ -114,7 +112,7 @@ def format_size(n_bytes: int) -> str:
 
 
 def print_summary(results: dict[str, bool]) -> None:
-    """Print a formatted table of step results and output file sizes."""
+    """Print a table showing step results and output file sizes."""
     print("\n" + "=" * 70)
     print("TD4 Pipeline — Final Summary")
     print("=" * 70)
@@ -173,7 +171,7 @@ def parse_args() -> argparse.Namespace:
 # ==============================================================================
 
 def main() -> None:
-    """Orchestrate the full TD4 pipeline."""
+    """Run all TD4 pipeline steps."""
     args = parse_args()
 
     print("=" * 70)
@@ -184,7 +182,7 @@ def main() -> None:
     print(f"  Data dir          : {ROOT_DIR / 'data'}")
     print()
 
-    # Check that the IE source files exist (needed by build_kb)
+    # Make sure input CSV files exist before starting Step 1
     if not args.skip_build:
         data_entities = ROOT_DIR / "data" / "extracted_knowledge.csv"
         data_triples  = ROOT_DIR / "data" / "candidate_triples.csv"

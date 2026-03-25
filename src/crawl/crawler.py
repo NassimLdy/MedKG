@@ -1,9 +1,8 @@
 """
-Lab 1 – Phase 1: Web Crawler for Medical Domain (Wikipedia API)
-===============================================================
-Uses the Wikipedia MediaWiki API (/w/api.php) to fetch article text.
-The API is explicitly allowed by Wikipedia's robots.txt for all agents.
-No trafilatura needed: the API returns clean plain text directly.
+Lab 1 – Phase 1: Medical Web Crawler
+=====================================
+Downloads Wikipedia articles about medical topics using the Wikipedia API.
+The API returns clean plain text. No HTML parsing needed.
 
 Usage:
     python src/crawl/crawler.py
@@ -46,8 +45,8 @@ BOT_USER_AGENT = "MedKGBot/1.0 (educational project; uses Wikipedia API)"
 HEADERS = {"User-Agent": BOT_USER_AGENT}
 
 MIN_WORDS = 500
-CRAWL_DELAY = 1.0          # polite delay between API calls (seconds)
-DEFAULT_MAX_PER_SEED = 8   # seed page + up to N-1 linked pages per seed
+CRAWL_DELAY = 1.0          # wait 1 second between requests (be polite)
+DEFAULT_MAX_PER_SEED = 8   # max pages to save per starting article
 
 SKIP_PREFIXES = (
     "Wikipedia:", "Talk:", "User:", "Help:", "Portal:",
@@ -70,9 +69,9 @@ MEDICAL_KEYWORDS = {
 
 def fetch_article(session: requests.Session, title: str) -> dict | None:
     """
-    Fetch plain-text content for *title* via the MediaWiki API.
-    Returns a dict with keys: url, title, text, word_count, timestamp.
-    Returns None if the article is missing or too short.
+    Download one Wikipedia article by title.
+    Returns a dict with url, title, text, word_count, timestamp.
+    Returns None if the article does not exist or is too short.
     """
     params = {
         "action": "query",
@@ -123,8 +122,8 @@ def fetch_article(session: requests.Session, title: str) -> dict | None:
 
 def fetch_links(session: requests.Session, title: str, limit: int = 100) -> list[str]:
     """
-    Fetch internal Wikipedia links from *title* via the API.
-    Returns a list of linked article titles filtered to medical ones.
+    Get the list of links inside a Wikipedia article.
+    Returns only titles that look like medical topics.
     """
     params = {
         "action": "query",
@@ -158,7 +157,7 @@ def fetch_links(session: requests.Session, title: str, limit: int = 100) -> list
 
 
 def is_medical_title(title: str) -> bool:
-    """Heuristic: does the article title look medically relevant?"""
+    """Return True if the title contains a medical keyword."""
     words = title.lower().replace("_", " ")
     return any(kw in words for kw in MEDICAL_KEYWORDS)
 
@@ -173,8 +172,8 @@ def crawl(
     max_per_seed: int = DEFAULT_MAX_PER_SEED,
 ) -> int:
     """
-    Crawl Wikipedia medical articles via the API starting from *seed_titles*.
-    For each seed, also fetches up to *max_per_seed* linked medical articles.
+    Download medical Wikipedia articles and save them to a JSONL file.
+    Starts from seed_titles, then follows links to related articles.
     Returns the number of pages saved.
     """
     out_path = Path(output_file)
@@ -214,13 +213,13 @@ def crawl(
                     total_saved, record["title"], record["word_count"],
                 )
 
-                # Enqueue medical links found on this page
+                # Add links from this page to the queue
                 if seed_count < max_per_seed:
                     links = fetch_links(session, record["title"])
                     time.sleep(CRAWL_DELAY)
                     new = [t for t in links if t not in visited]
                     queue.extend(new[:50])
-                    logger.debug("Enqueued %d candidate links from %s", len(new[:50]), title)
+                    logger.debug("Queued %d links from %s", len(new[:50]), title)
 
     logger.info("Crawl complete — %d pages saved to %s", total_saved, output_file)
     return total_saved

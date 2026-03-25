@@ -1,18 +1,17 @@
 """
-expand_kb_bulk.py — Predicate-Controlled Bulk SPARQL Expansion
-==============================================================
-Supplements the entity-by-entity expansion with broad predicate queries on
-Wikidata, pulling all (subject, predicate, object) triples for key medical
-predicates. This is the fastest way to reach the 50k–200k target.
+expand_kb_bulk.py — Bulk KB Expansion using Wikidata SPARQL
+============================================================
+Adds more triples to the KB by querying Wikidata for each medical predicate.
+This is faster than expanding entity by entity.
 
-Strategy (from TD4 subject):
+Example query used:
     SELECT ?s ?o WHERE { ?s wdt:P780 ?o . } LIMIT 20000
 
 Usage:
     python src/kg/expand_kb_bulk.py
 Output:
-    kg_artifacts/medical_kb_expanded.nt  (overwritten with larger KB)
-    kg_artifacts/stats.json              (updated)
+    kg_artifacts/medical_kb_expanded.nt  (updated with new triples)
+    kg_artifacts/stats.json              (updated counts)
 """
 
 import json
@@ -52,7 +51,7 @@ WD_BASE  = "http://www.wikidata.org/entity/"
 
 
 def sparql_query(pid: str, limit: int) -> list[tuple[str, str, str]]:
-    """Run a predicate-controlled SPARQL query on Wikidata."""
+    """Query Wikidata for all triples with a given predicate."""
     import requests
     query = f"""
 SELECT ?s ?o WHERE {{
@@ -147,11 +146,11 @@ def main() -> None:
 
     print(f"\n  New triples from bulk expansion: {len(new_triples):,}")
 
-    # Merge and deduplicate
+    # Combine old and new triples, remove duplicates
     all_triples = existing | new_triples
     print(f"  Total after merge (deduplicated): {len(all_triples):,}")
 
-    # Compute stats
+    # Count unique entities and relations
     entities = set()
     relations = set()
     for s, p, o in all_triples:

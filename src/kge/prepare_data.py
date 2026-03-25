@@ -2,8 +2,8 @@
 TD5 - Part 2: Prepare KGE Data Splits from Expanded KB
 Usage: python src/kge/prepare_data.py [--input kg_artifacts/medical_kb_expanded.nt] [--output-dir data/kge/]
 
-Reads the N-Triples file produced by the KB expansion step, filters to entity-entity triples,
-and writes train/valid/test TSV splits plus entity/relation dictionaries.
+Reads the N-Triples KB file, keeps only entity-entity triples,
+and writes train/valid/test splits and entity/relation lists.
 """
 
 import os
@@ -29,9 +29,9 @@ BLOCKED_PREDICATES = {
 
 def parse_nt_line(line: str):
     """
-    Parse one N-Triples line.
-    Returns (subject_uri, predicate_uri, object_uri) if object is a URI,
-    or None otherwise (literals, malformed lines, comments).
+    Read one N-Triples line.
+    Return (subject, predicate, object) if all three are URIs.
+    Return None for literals, blank lines, and comments.
     """
     line = line.strip()
     if not line or line.startswith("#"):
@@ -96,8 +96,8 @@ def load_triples(nt_file: str):
 
 def split_triples(triples, train_ratio=0.8, valid_ratio=0.1, seed=42):
     """
-    Split triples into train/valid/test ensuring every entity in valid/test
-    also appears in train.
+    Split triples into train, valid, and test sets.
+    Every entity in valid/test must also appear in train.
     """
     random.seed(seed)
     random.shuffle(triples)
@@ -110,13 +110,13 @@ def split_triples(triples, train_ratio=0.8, valid_ratio=0.1, seed=42):
     valid = triples[n_train: n_train + n_valid]
     test = triples[n_train + n_valid:]
 
-    # Collect entities that appear in train
+    # Find all entities in the training set
     train_entities = set()
     for s, p, o in train:
         train_entities.add(s)
         train_entities.add(o)
 
-    # Move triples with unseen entities into train
+    # Move triples with new entities into train
     safe_valid, overflow_valid = [], []
     for triple in valid:
         s, p, o = triple
@@ -188,7 +188,7 @@ def main() -> None:
     input_file = args.input
     output_dir = args.output_dir.rstrip("/\\")
 
-    # Resolve relative paths from CWD
+    # Convert relative paths to absolute
     if not os.path.isabs(input_file):
         input_file = os.path.join(os.getcwd(), input_file)
     if not os.path.isabs(output_dir):
@@ -270,14 +270,14 @@ def main() -> None:
     print(f"  Unique entities             : {len(entities)}")
     print(f"  Unique relations            : {len(relations)}")
 
-    # Relation frequency
+    # Count how many triples each relation has
     rel_freq: dict[str, int] = defaultdict(int)
     for _, p, _ in triples:
         rel_freq[p] += 1
 
     print(f"\n  Top-10 relations by frequency:")
     for rel, cnt in sorted(rel_freq.items(), key=lambda x: -x[1])[:10]:
-        # Shorten URI for display
+        # Use only the last part of the URI
         short = rel.split("/")[-1].split("#")[-1]
         print(f"    {cnt:>6}  {short}")
 

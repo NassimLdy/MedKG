@@ -1,9 +1,9 @@
 """
-filter_kb_for_kge.py — Filter KB to med: entities and their 1-hop neighbors
-=============================================================================
-75k entities is too large for CPU-based KGE evaluation.
-This script keeps only triples involving the 261 core med: entities
-and their direct Wikidata neighbors, producing a ~5-10k entity graph.
+filter_kb_for_kge.py — Keep only core med: entities and their neighbors
+========================================================================
+75k entities is too big for KGE training on CPU.
+This script keeps only triples that involve the core med: entities
+and their direct Wikidata neighbors. The result is ~5-10k entities.
 
 Usage:
     python src/kge/filter_kb_for_kge.py
@@ -40,7 +40,7 @@ def main():
     print("  KB Filter: med: core + 1-hop Wikidata neighbors")
     print("=" * 60)
 
-    # --- Pass 1: collect all triples and find med: entities ---
+    # Step 1: read all triples and find the core med: entities
     print(f"\n[1/3] Reading {os.path.basename(INPUT_NT)} ...")
     all_triples = []
     med_entities = set()
@@ -59,7 +59,7 @@ def main():
     print(f"  Total triples read  : {len(all_triples):,}")
     print(f"  Core med: entities  : {len(med_entities):,}")
 
-    # Also collect Wikidata QIDs that are owl:sameAs to med: entities
+    # Also keep Wikidata QIDs that are linked to med: entities via owl:sameAs
     OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs"
     wikidata_qids = set()
     for s, p, o in all_triples:
@@ -71,7 +71,7 @@ def main():
     print(f"  Aligned Wikidata QIDs: {len(wikidata_qids):,}")
     print(f"  Total core entities  : {len(core):,}")
 
-    # --- Pass 2: 1-hop — keep triples where s OR o is a core entity ---
+    # Step 2: keep triples where the subject or object is a core entity
     hop1 = [(s, p, o) for s, p, o in all_triples
             if s in core or o in core]
     hop1_entities = {s for s, p, o in hop1} | {o for s, p, o in hop1}
@@ -79,7 +79,7 @@ def main():
     print(f"  Triples kept        : {len(hop1):,}")
     print(f"  Entities in 1-hop   : {len(hop1_entities):,}")
 
-    # --- Pass 3: write output ---
+    # Step 3: write the filtered triples
     print(f"\n[3/3] Writing {os.path.basename(OUTPUT_NT)} ...")
     with open(OUTPUT_NT, "w", encoding="utf-8") as f:
         for s, p, o in hop1:

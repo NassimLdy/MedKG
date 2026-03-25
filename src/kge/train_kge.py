@@ -1,9 +1,9 @@
 """
-TD5 - Part 3: Train Knowledge Graph Embedding Models (TransE, DistMult)
+TD5 - Part 3: Train KGE Models (TransE and DistMult)
 Usage: python src/kge/train_kge.py [--data-dir data/kge/] [--output-dir results/]
 
-Uses PyKEEN to train TransE and DistMult on the medical KB splits and
-evaluates both with MRR, Hits@1, Hits@3, Hits@10 (filtered).
+Trains two embedding models on the medical knowledge graph using PyKEEN.
+Reports MRR, Hits@1, Hits@3, Hits@10.
 """
 
 import os
@@ -38,7 +38,7 @@ def print_section(title: str) -> None:
 
 
 def load_factory(path: str, entity_to_id=None, relation_to_id=None):
-    """Load a TriplesFactory from a TSV file."""
+    """Load a set of triples from a TSV file into a TriplesFactory."""
     if not os.path.isfile(path):
         print(f"ERROR: File not found: {path}")
         sys.exit(1)
@@ -52,7 +52,7 @@ def load_factory(path: str, entity_to_id=None, relation_to_id=None):
 
 
 def extract_metrics(results) -> dict:
-    """Extract key metrics from a pykeen PipelineResult."""
+    """Read MRR and Hits@k scores from a PyKEEN training result."""
     metric_results = results.metric_results
     mrr = metric_results.get_metric("mean_reciprocal_rank")
     h1 = metric_results.get_metric("hits_at_1")
@@ -70,11 +70,11 @@ def extract_metrics(results) -> dict:
 # Training configuration
 # ---------------------------------------------------------------------------
 
-EMBEDDING_DIM = 50       # reduced to fit in RAM (75k entities)
+EMBEDDING_DIM = 50       # small dimension to save memory
 NUM_EPOCHS = 100
-BATCH_SIZE = 512         # larger batch = fewer allocs = less peak memory
+BATCH_SIZE = 512         # large batch to reduce memory allocations
 LEARNING_RATE = 0.01
-NUM_NEGS_PER_POS = 5    # reduced to save memory during negative sampling
+NUM_NEGS_PER_POS = 5    # negative samples per positive triple
 
 MODEL_CONFIGS = {
     "TransE": {
@@ -175,7 +175,7 @@ def main() -> None:
         model_output_dir = os.path.join(output_dir, model_name)
         os.makedirs(model_output_dir, exist_ok=True)
 
-        # Build pipeline kwargs — loss_kwargs only if non-empty
+        # Pass loss_kwargs only if non-empty
         loss_kw = cfg["loss_kwargs"] if cfg["loss_kwargs"] else None
 
         try:
@@ -266,11 +266,9 @@ def main() -> None:
     print(f"  Entities  : {training_factory.num_entities}")
     print(f"  Relations : {training_factory.num_relations}")
 
-    # ------------------------------------------------------------------
-    # Section 5.2 — KB Size Sensitivity
-    # ------------------------------------------------------------------
+    # Train TransE on smaller subsets to see how size affects results
     print_section("5.2 KB Size Sensitivity (TransE only)")
-    print("  Subsampling training set at 20k, 50k, and full size...")
+    print("  Testing with 20k, 50k, and full training set...")
 
     import random
     import numpy as np

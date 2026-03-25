@@ -1,15 +1,15 @@
 """
-TD5 - Part 4: KGE Embedding Analysis
+TD5 - Part 4: Analyze KGE Embeddings
 Usage: python src/kge/analyze_kge.py [--model-dir results/TransE/]
                                       [--train-file data/kge/train.txt]
                                       [--output-dir results/]
 
 Sections:
-  6.1 Nearest Neighbors    — cosine similarity in embedding space
-  6.2 Clustering (t-SNE)   — 2-D visualisation of entity embeddings
-  6.3 Relation Behavior    — symmetry / composition analysis
-  7.  Critical Reflection  — printed commentary
-  8.  SWRL vs Embedding    — medical SWRL rule vs learned relation vectors
+  6.1 Nearest Neighbors  — find similar entities using cosine similarity
+  6.2 t-SNE Clustering   — draw entity embeddings in 2D
+  6.3 Relation Behavior  — check symmetry and composition patterns
+  7.  Reflection         — discuss results
+  8.  SWRL vs Embedding  — compare rule-based and embedding-based reasoning
 """
 
 import os
@@ -57,9 +57,7 @@ except ImportError:
     print("WARNING: scikit-learn not installed. t-SNE plot will be skipped.")
 
 
-# ---------------------------------------------------------------------------
-# Medical entities of interest (labels that may appear as URI fragments)
-# ---------------------------------------------------------------------------
+# Medical entities to search for in the embedding space
 MEDICAL_ENTITIES_KEYWORDS = [
     "Diabetes", "Hypertension", "Asthma", "Cancer", "Alzheimer",
     "diabetes", "hypertension", "asthma", "cancer", "alzheimer",
@@ -83,7 +81,7 @@ def print_section(title: str) -> None:
 
 
 def cosine_similarity_matrix(matrix: np.ndarray) -> np.ndarray:
-    """Compute pairwise cosine similarity for rows of matrix."""
+    """Compute cosine similarity between all pairs of entity embeddings."""
     norms = np.linalg.norm(matrix, axis=1, keepdims=True)
     norms = np.where(norms == 0, 1e-10, norms)
     normed = matrix / norms
@@ -91,7 +89,7 @@ def cosine_similarity_matrix(matrix: np.ndarray) -> np.ndarray:
 
 
 def find_entity_by_keyword(entity_to_id: dict, keyword: str) -> list:
-    """Return all entity URIs whose fragment/path contains keyword."""
+    """Return all entity URIs that contain the given keyword."""
     keyword_lower = keyword.lower()
     return [
         uri for uri in entity_to_id
@@ -100,7 +98,7 @@ def find_entity_by_keyword(entity_to_id: dict, keyword: str) -> list:
 
 
 def short_uri(uri: str, max_len: int = 55) -> str:
-    """Shorten a URI for display."""
+    """Return the last part of a URI, truncated to max_len characters."""
     fragment = uri.split("/")[-1].split("#")[-1]
     if len(fragment) <= max_len:
         return fragment
@@ -108,28 +106,23 @@ def short_uri(uri: str, max_len: int = 55) -> str:
 
 
 def load_pipeline_result(model_dir: str):
-    """Load a saved model from directory using torch.load on trained_model.pkl."""
+    """Load a saved TransE model and its training triples from disk."""
     import json
     model_pkl = os.path.join(model_dir, "trained_model.pkl")
-    training_dir = os.path.join(model_dir, "training_triples")
 
     model = torch.load(model_pkl, map_location="cpu", weights_only=False)
 
-    # Load entity/relation mappings from the training triples factory
-    tf = TriplesFactory.from_path(os.path.join(training_dir, "new_to_old_ids.tsv.gz"),
-                                   ) if False else None
-    # Use metadata.json to get mapping files
+    # Load metadata (not used directly, but good to confirm file exists)
     meta_path = os.path.join(model_dir, "metadata.json")
     with open(meta_path) as f:
         meta = json.load(f)
 
-    # Load the training triples factory directly
-    # model_dir is e.g. .../MedKG/results/TransE/ → root is 3 levels up
+    # model_dir is e.g. .../MedKG/results/TransE/ → project root is 3 levels up
     _root = os.path.dirname(os.path.dirname(os.path.dirname(model_dir)))
     train_factory = TriplesFactory.from_path(
         os.path.join(_root, "data", "kge", "train.txt")
     )
-    # Attach to a simple namespace for compatibility
+    # Return a simple object holding model and training data
     class _Result:
         pass
     r = _Result()
@@ -345,15 +338,14 @@ def tsne_clustering(
 def relation_behavior(training_triples: list) -> None:
     print_section("6.3  Relation Behavior Analysis")
 
-    # Build triple sets
+    # Put all triples in a set for fast lookup
     triple_set = set()
     relation_pairs: dict[str, list] = defaultdict(list)
     for s, p, o in training_triples:
         triple_set.add((s, p, o))
         relation_pairs[p].append((s, o))
 
-    # Relation co-occurrence for composition detection
-    # Build: entity -> outgoing relations
+    # Map each entity to the relations it uses (for chain detection)
     entity_out: dict[str, dict[str, set]] = defaultdict(lambda: defaultdict(set))
     for s, p, o in training_triples:
         entity_out[s][p].add(o)
@@ -365,7 +357,7 @@ def relation_behavior(training_triples: list) -> None:
     symmetric_count = 0
     for rel, pairs in sorted(relation_pairs.items(), key=lambda x: -len(x[1])):
         n = len(pairs)
-        # Check symmetry: count how many (s,o) have inverse (o,s) in same rel
+        # Count pairs where both (s,o) and (o,s) exist in the same relation
         sym_matches = sum(1 for (s, o) in pairs if (o, rel, s) in triple_set)
         sym_pct = 100.0 * sym_matches / n if n > 0 else 0.0
         is_symmetric = sym_pct > 50.0
@@ -378,7 +370,7 @@ def relation_behavior(training_triples: list) -> None:
 
     print(f"\n  Relations flagged as symmetric: {symmetric_count} / {len(relation_pairs)}")
 
-    # Simple composition check: R1 ; R2 ≈ R3
+    # Check if two relations form a chain that leads to a third
     print("\n  Composition analysis (keyword-based path check):")
     composition_candidates = [
         ("parent", "parent", "grandparent"),

@@ -38,10 +38,7 @@ try:
 except ImportError:
     ResultException = Exception
 
-# ---------------------------------------------------------------------------
-# Paths - prefer the expanded graph produced by the KB pipeline;
-# fall back to the initial Turtle file if the expanded N-Triples are absent.
-# ---------------------------------------------------------------------------
+# Graph file paths — use the expanded KB if it exists, else fall back to the initial KB
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.dirname(_BASE_DIR)
@@ -54,8 +51,7 @@ _CANDIDATE_GRAPHS = [
 ]
 
 def _find_default_graph() -> str:
-    """Return the first existing candidate graph path, or the first candidate
-    (so the error message is meaningful when none exist)."""
+    """Return the first graph file that exists. If none exist, return the first path."""
     for path in _CANDIDATE_GRAPHS:
         if os.path.isfile(path):
             return path
@@ -63,24 +59,18 @@ def _find_default_graph() -> str:
 
 TTL_FILE = _find_default_graph()
 
-# ---------------------------------------------------------------------------
-# Ollama configuration
-# ---------------------------------------------------------------------------
+# Ollama settings
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "deepseek-r1:1.5b"
 
-# ---------------------------------------------------------------------------
-# Schema-summary tuning parameters
-# ---------------------------------------------------------------------------
+# How many items to include in the schema summary for the prompt
 
 MAX_PREDICATES = 80   # maximum distinct predicates to list in the schema summary
 MAX_CLASSES    = 40   # maximum distinct classes to list
 SAMPLE_TRIPLES = 20   # number of example triples to embed in the prompt
 
-# ---------------------------------------------------------------------------
-# Medical namespace (matches ontology)
-# ---------------------------------------------------------------------------
+# Medical namespace used throughout the KB
 
 MED = Namespace("http://medkg.local/")
 
@@ -90,18 +80,8 @@ MED = Namespace("http://medkg.local/")
 
 def ask_local_llm(prompt: str, model: str = MODEL, timeout: int = 300) -> str:
     """
-    Send *prompt* to an Ollama model and return the full response text.
-
-    Parameters
-    ----------
-    prompt  : the complete prompt string
-    model   : Ollama model tag (default: gemma:2b)
-    timeout : request timeout in seconds
-
-    Returns
-    -------
-    The model's response as a plain string, or an error message that starts
-    with "ERROR:" so callers can detect failure.
+    Send a prompt to an Ollama model and return the answer.
+    Returns a string starting with "ERROR:" if the request fails.
     """
     payload = {
         "model": model,
@@ -133,22 +113,9 @@ def ask_local_llm(prompt: str, model: str = MODEL, timeout: int = 300) -> str:
 
 def load_graph(path: str) -> Graph:
     """
-    Load an RDF graph from *path* using rdflib.
-
-    Supports Turtle (.ttl), N-Triples (.nt), RDF/XML (.rdf/.owl), and
-    Notation3 (.n3).  The format is inferred from the file extension.
-
-    Parameters
-    ----------
-    path : absolute or relative path to the RDF file
-
-    Returns
-    -------
-    A parsed rdflib.Graph
-
-    Raises
-    ------
-    SystemExit if the file does not exist or cannot be parsed.
+    Load an RDF file into a graph.
+    Supports .ttl, .nt, .rdf, .owl, .n3 formats.
+    Exits with an error if the file is missing or cannot be parsed.
     """
     if not os.path.isfile(path):
         print(f"[ERROR] Graph file not found: {path}")
@@ -156,7 +123,7 @@ def load_graph(path: str) -> Graph:
         print(f"  - Or pass a custom path with:  --graph <path>")
         sys.exit(1)
 
-    # Infer rdflib format string from extension
+    # Choose the rdflib format based on the file extension
     ext = os.path.splitext(path)[1].lower()
     fmt_map = {
         ".ttl": "turtle",
@@ -189,31 +156,12 @@ def load_graph(path: str) -> Graph:
 
 def build_schema_summary(g: Graph) -> str:
     """
-    Build a concise textual summary of the knowledge graph schema to include
-    in the SPARQL-generation prompt.
-
-    The summary covers:
-      1. Fixed namespace prefixes (med:, rdf:, rdfs:, owl:, xsd:, wdt:, wd:)
-      2. Up to MAX_CLASSES distinct rdf:type values (the classes used)
-      3. Up to MAX_PREDICATES distinct predicates used in the graph
-      4. SAMPLE_TRIPLES example triples rendered in Turtle-like notation
-
-    The medical-specific section explicitly lists the key predicates defined in
-    the MedKG ontology so the LLM can use them directly.
-
-    Parameters
-    ----------
-    g : the loaded rdflib.Graph
-
-    Returns
-    -------
-    A multi-line string describing the graph schema.
+    Build a text description of the graph schema for the SPARQL prompt.
+    Includes namespace prefixes, classes, predicates, and example triples.
     """
     lines = []
 
-    # ------------------------------------------------------------------
-    # 3.1  Fixed prefixes (always include these)
-    # ------------------------------------------------------------------
+    # Namespace prefixes
     lines.append("=== Namespace Prefixes ===")
     lines.append("PREFIX med:  <http://medkg.local/>")
     lines.append("PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
@@ -224,9 +172,7 @@ def build_schema_summary(g: Graph) -> str:
     lines.append("PREFIX wd:   <http://www.wikidata.org/entity/>")
     lines.append("")
 
-    # ------------------------------------------------------------------
-    # 3.2  Medical-domain context (hard-coded from MedKG ontology)
-    # ------------------------------------------------------------------
+    # Medical domain context (from MedKG ontology)
     lines.append("=== Medical Domain Context ===")
     lines.append("Base namespace: http://medkg.local/")
     lines.append("")
@@ -246,9 +192,7 @@ def build_schema_summary(g: Graph) -> str:
     lines.append("  rdfs:label        - human-readable name of any entity")
     lines.append("")
 
-    # ------------------------------------------------------------------
-    # 3.3  Classes observed in the graph (inferred from rdf:type triples)
-    # ------------------------------------------------------------------
+    # Classes found in the graph
     class_query = """
         SELECT DISTINCT ?cls WHERE {
             ?s rdf:type ?cls .
@@ -266,9 +210,7 @@ def build_schema_summary(g: Graph) -> str:
     except Exception:
         pass  # non-critical - schema still useful without this section
 
-    # ------------------------------------------------------------------
-    # 3.4  Distinct predicates observed in the graph
-    # ------------------------------------------------------------------
+    # Predicates found in the graph
     pred_query = """
         SELECT DISTINCT ?p WHERE { ?s ?p ?o . }
         LIMIT %d
@@ -283,9 +225,7 @@ def build_schema_summary(g: Graph) -> str:
     except Exception:
         pass
 
-    # ------------------------------------------------------------------
-    # 3.5  Sample triples (to give the LLM concrete examples of URIs used)
-    # ------------------------------------------------------------------
+    # Example triples (to show the LLM real URI patterns)
     sample_query = """
         SELECT ?s ?p ?o WHERE {
             ?s ?p ?o .
@@ -358,18 +298,8 @@ SPARQL_INSTRUCTIONS = (
 
 def generate_sparql(question: str, schema: str, model: str = MODEL) -> str:
     """
-    Ask the local LLM to convert *question* into a SPARQL query.
-
-    Parameters
-    ----------
-    question : natural-language question from the user
-    schema   : unused (kept for API compatibility - prompt is now self-contained)
-    model    : Ollama model tag
-
-    Returns
-    -------
-    A SPARQL query string (may still contain syntax errors - that is handled
-    by run_sparql with the self-repair loop).
+    Ask the LLM to turn a question into a SPARQL query.
+    The result may have errors; run_sparql will try to fix them.
     """
     prompt = SPARQL_INSTRUCTIONS.format(question=question)
     return ask_local_llm(prompt, model=model)
@@ -390,27 +320,23 @@ _STD_PREFIXES = (
 
 def _extract_sparql_block(text: str) -> str:
     """
-    Extract a SPARQL query from an LLM response that may contain:
-    - Raw SPARQL (ideal)
-    - Markdown code fences: ```sparql ... ```
-    - Prose prefix: "Here is the query: SELECT ..."
-
-    Also auto-prepends standard prefixes if the query is missing them,
-    so small models that forget PREFIX declarations still work.
+    Pull a SPARQL query out of an LLM response.
+    The response may be raw SPARQL, a code block, or prose with SPARQL inside.
+    Adds standard PREFIX lines if the query is missing them.
     """
     import re
     text = text.strip()
 
-    # 1. Try to extract from ```sparql...``` or ```...``` block
+    # Try to find a code block first
     fence = re.search(r"```(?:sparql|sql|SPARQL)?\s*(.*?)```", text, re.DOTALL)
     if fence:
         sparql = fence.group(1).strip()
     else:
-        # 2. Find first occurrence of PREFIX / SELECT / ASK / CONSTRUCT / DESCRIBE
+        # Find the first SPARQL keyword and take everything from there
         kw = re.search(r"\b(PREFIX|SELECT|ASK|CONSTRUCT|DESCRIBE)\b", text, re.IGNORECASE)
         sparql = text[kw.start():].strip() if kw else text
 
-    # 3. Auto-inject standard prefixes if the query doesn't declare any
+    # Add standard prefixes if the query has none
     if "PREFIX" not in sparql.upper():
         sparql = _STD_PREFIXES + sparql
 
@@ -426,28 +352,14 @@ def run_sparql(
     enable_repair: bool = True,
 ) -> tuple[list[dict], str]:
     """
-    Execute *sparql_text* against *g*.  If execution fails and *enable_repair*
-    is True, attempt one self-repair cycle: feed the error back to the LLM and
-    re-execute the corrected query.
-
-    Parameters
-    ----------
-    g             : loaded rdflib.Graph
-    sparql_text   : SPARQL query string (may be malformed)
-    question      : original user question (used in repair prompt)
-    schema        : schema summary (used in repair prompt)
-    model         : Ollama model tag
-    enable_repair : whether to attempt self-repair on failure
-
-    Returns
-    -------
-    (rows, final_sparql) where rows is a list of result dicts and
-    final_sparql is the query that was ultimately executed (possibly repaired).
+    Run a SPARQL query on the graph.
+    If it fails and enable_repair is True, ask the LLM to fix it and try again.
+    If repair also fails, fall back to keyword search.
+    Returns (rows, final_query).
     """
     sparql_clean = _extract_sparql_block(sparql_text)
 
-    # --- Template-first: try hand-crafted SPARQL before the LLM query ---
-    # The template uses the correct owl:sameAs+wdt: join and is always valid.
+    # Try a hard-coded template first — it is always valid
     template = _template_sparql(question)
     if template:
         try:
@@ -462,7 +374,7 @@ def run_sparql(
         except Exception:
             pass  # template failed (shouldn't happen) — continue to LLM query
 
-    # --- First attempt (LLM-generated) ---
+    # Run the LLM-generated query
     try:
         result = g.query(sparql_clean)
         rows = [
@@ -483,7 +395,7 @@ def run_sparql(
         print(f"[SPARQL ERROR] First attempt failed: {first_error}")
         print("[INFO] Attempting self-repair ...")
 
-        # --- Self-repair prompt ---
+        # Ask the LLM to fix the broken query
         repair_prompt = f"""
 The following SPARQL query produced an error when run against a medical
 knowledge graph (namespace http://medkg.local/).
@@ -510,7 +422,7 @@ Corrected SPARQL:
         repaired_text = ask_local_llm(repair_prompt, model=model)
         repaired_clean = _extract_sparql_block(repaired_text)
 
-        # --- Second attempt with repaired query ---
+        # Try the repaired query
         try:
             result = g.query(repaired_clean)
             rows = [
@@ -522,7 +434,7 @@ Corrected SPARQL:
 
         except Exception as second_error:
             print(f"[SPARQL ERROR] Repair attempt also failed: {second_error}")
-            # --- Keyword fallback: search graph by entity name ---
+            # Both SPARQL attempts failed — use keyword search
             print("[INFO] SPARQL failed — falling back to keyword search ...")
             fallback_rows = keyword_fallback(g, question)
             if fallback_rows:
@@ -544,9 +456,8 @@ def _template_sparql(question: str) -> Optional[str]:
     import re
     q = question.lower().strip().rstrip("?.")
 
-    # Maps question pattern → (wdt predicate, result variable name)
-    # Uses wdt: predicates which are bulk-loaded from Wikidata (thousands of triples)
-    # and linked via owl:sameAs: med:Disease owl:sameAs wd:Qxxx wdt:Pyyy wd:Qresult
+    # Each entry: (regex pattern, Wikidata predicate, result type)
+    # The SPARQL joins: med:Disease owl:sameAs wd:Q... wdt:P... wd:result
     _PATTERNS = [
         # Symptoms
         (r"symptoms?\s+of\s+(.+)",                                    "P780",  "symptom"),
@@ -558,7 +469,7 @@ def _template_sparql(question: str) -> Optional[str]:
             "P2176", "medication"),
         (r"(?:drug|drugs|medicine|medicines?)\s+(?:for|used\s+(?:for|to\s+treat))\s+(.+)",
             "P2176", "medication"),
-        # Treatments (P2176 = drug used for treatment: disease → drug, direct)
+        # Treatments (P2176 = drug used for treatment, disease → drug direction)
         (r"treatments?\s+(?:(?:are\s+)?available\s+for|for|of)\s+(.+)", "P2176", "treatment"),
         (r"what\s+treats?\s+(.+)",                                      "P2176", "treatment"),
         # Medical specialty
@@ -573,7 +484,7 @@ def _template_sparql(question: str) -> Optional[str]:
         if m:
             entity = m.group(1).strip()
             entity = re.sub(r"\s+(?:disease|condition|disorder|syndrome)$", "", entity).strip()
-            # Join med: entity → owl:sameAs → Wikidata entity → wdt:Pxxx → result
+            # Build SPARQL: med entity → owl:sameAs → Wikidata → predicate → result
             return (
                 "PREFIX med:  <http://medkg.local/>\n"
                 "PREFIX owl:  <http://www.w3.org/2002/07/owl#>\n"
@@ -581,7 +492,7 @@ def _template_sparql(question: str) -> Optional[str]:
                 f"SELECT DISTINCT ?result ?name WHERE {{\n"
                 f"  ?disease owl:sameAs ?wd .\n"
                 f"  ?wd wdt:{wdt_prop} ?result .\n"
-                # Reverse sameAs: med:polyuria owl:sameAs wd:Q1124286 → readable slug
+                # Reverse lookup: if med:polyuria owl:sameAs ?result, get the readable name
                 f"  OPTIONAL {{ ?medEnt owl:sameAs ?result .\n"
                 f"    BIND(REPLACE(STR(?medEnt), \"http://medkg.local/\", \"\") AS ?name) }}\n"
                 f'  FILTER(CONTAINS(LCASE(STR(?disease)), "{entity}"))\n'
@@ -596,19 +507,9 @@ def _template_sparql(question: str) -> Optional[str]:
 
 def keyword_fallback(g: Graph, question: str) -> list[dict]:
     """
-    Simple keyword search on the graph used when SPARQL generation fails.
-
-    Extracts meaningful words from *question*, finds med: entities whose URI
-    contains one of those words, and returns their med: predicate/value pairs.
-
-    Parameters
-    ----------
-    g        : loaded rdflib.Graph
-    question : natural-language question
-
-    Returns
-    -------
-    List of dicts with keys 'entity', 'relation', 'value'.
+    Search the graph by keyword when SPARQL fails.
+    Finds med: entities whose URI contains a word from the question.
+    Returns a list of dicts with keys 'entity', 'relation', 'value'.
     """
     import re
 
@@ -626,7 +527,7 @@ def keyword_fallback(g: Graph, question: str) -> list[dict]:
 
     MED_NS  = "http://medkg.local/"
     WDT_NS  = "http://www.wikidata.org/prop/direct/"
-    # Medical predicates we actually care about for answers
+    # Predicates that give useful medical answers
     USEFUL_PREDS = {
         MED_NS + "hasSymptom", MED_NS + "hasTreatment",
         MED_NS + "hasMedication", MED_NS + "treatedBy",
@@ -638,12 +539,12 @@ def keyword_fallback(g: Graph, question: str) -> list[dict]:
     results = []
 
     for kw in keywords[:3]:
-        # Find med: subjects whose URI contains the keyword
+        # Find entities whose URI contains the keyword
         matching = [
             s for s in g.subjects()
             if str(s).startswith(MED_NS) and kw in str(s).lower()
         ]
-        # First pass: only useful medical predicates
+        # First: look for medical predicates only
         for subj in matching[:10]:
             for p, o in g.predicate_objects(subj):
                 if str(p) in USEFUL_PREDS:
@@ -656,7 +557,7 @@ def keyword_fallback(g: Graph, question: str) -> list[dict]:
                         return results
         if results:
             return results
-        # Second pass: any med: predicate (broader fallback)
+        # Second: try any med: predicate if the first pass found nothing
         for subj in matching[:5]:
             for p, o in g.predicate_objects(subj):
                 if str(p).startswith(MED_NS):
@@ -679,17 +580,8 @@ def keyword_fallback(g: Graph, question: str) -> list[dict]:
 
 def answer_no_rag(question: str, model: str = MODEL) -> str:
     """
-    Answer *question* using the LLM's own parametric knowledge, without any
-    access to the knowledge graph.  This is the baseline for comparison.
-
-    Parameters
-    ----------
-    question : natural-language question
-    model    : Ollama model tag
-
-    Returns
-    -------
-    LLM response string.
+    Answer a question using the LLM alone, without the knowledge graph.
+    This is the baseline for comparison with the RAG system.
     """
     prompt = (
         "You are a helpful medical knowledge assistant.\n"
@@ -706,30 +598,17 @@ def answer_no_rag(question: str, model: str = MODEL) -> str:
 
 def generate_answer(question: str, rows: list[dict], model: str = MODEL) -> str:
     """
-    Synthesize a clean human-readable answer from raw SPARQL/fallback rows.
-
-    Extracts the most meaningful values from each row, formats them as a
-    bullet list, then asks the LLM to write one clear sentence.
-
-    Parameters
-    ----------
-    question : original natural-language question
-    rows     : result rows from run_sparql / keyword_fallback
-    model    : Ollama model tag
-
-    Returns
-    -------
-    A plain-English answer string.
+    Turn raw graph results into a clean English answer.
+    Extracts readable names from each row, then builds a simple sentence.
     """
     import re
 
     if not rows:
         return "No relevant information was found in the knowledge graph."
 
-    # Classify each row's values: collect readable labels and count bare QIDs.
-    # Apply URI regex BEFORE underscore replacement so HP_0000103 stays intact.
-    readable: list[str] = []   # human-readable names (med: slugs, HP/SYMP codes)
-    qid_count = 0              # Wikidata QIDs with no readable label in the graph
+    # Find readable labels in each row. Check URI patterns before replacing underscores.
+    readable: list[str] = []   # names we can show the user
+    qid_count = 0              # count of rows that only have Wikidata QIDs
     relation_types: list[str] = []
 
     for row in rows[:20]:
@@ -759,7 +638,7 @@ def generate_answer(question: str, rows: list[dict], model: str = MODEL) -> str:
             else:
                 cand = None
 
-            # Keep the first non-QID label found (HP preferred over nothing)
+            # Keep the first readable label found for this row
             if cand and len(cand) > 1 and best is None:
                 best = cand
 
@@ -824,18 +703,18 @@ def generate_answer(question: str, rows: list[dict], model: str = MODEL) -> str:
 # ==============================================================================
 
 def _fmt_results(rows: list[dict]) -> str:
-    """Pretty-print SPARQL or keyword-fallback result rows as a readable string."""
+    """Format result rows as a readable string."""
     if not rows:
         return "(no results)"
 
-    # Collect all variable names, preserving order of first occurrence
+    # Collect all variable names in order of first appearance
     all_vars: list[str] = []
     for row in rows:
         for k in row:
             if k not in all_vars:
                 all_vars.append(k)
 
-    # Shorten known URIs for readability
+    # Shorten long URIs to shorter prefixes
     def clean(val: str) -> str:
         return (
             val.replace("http://medkg.local/", "")
@@ -865,11 +744,7 @@ def _print_banner(title: str) -> None:
 # ==============================================================================
 
 def check_ollama(model: str = MODEL) -> bool:
-    """
-    Verify that Ollama is reachable and that *model* is available.
-
-    Returns True if everything is ready, False otherwise.
-    """
+    """Check that Ollama is running and the model is available. Return True if ready."""
     try:
         resp = requests.get("http://localhost:11434/api/tags", timeout=5)
         resp.raise_for_status()
@@ -903,17 +778,7 @@ EVAL_QUESTIONS = [
 
 
 def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> None:
-    """
-    Run the predefined evaluation suite and print a side-by-side comparison of
-    baseline (no-RAG) vs SPARQL-generation RAG for each question.
-
-    Parameters
-    ----------
-    g             : loaded rdflib.Graph
-    schema        : schema summary string
-    model         : Ollama model tag
-    enable_repair : whether self-repair is enabled
-    """
+    """Run 5 test questions and show baseline vs RAG answers side by side."""
     _print_banner("EVALUATION - 5 Medical Questions (Baseline vs SPARQL-RAG)")
     print(f"Model  : {model}")
     print(f"Graph  : {len(g):,} triples")
@@ -925,7 +790,7 @@ def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> No
         print(f"[Q{idx}] {question}")
         _print_separator("-")
 
-        # --- Baseline (no RAG) ---
+        # Baseline: LLM answers from its own knowledge (no graph)
         print("  >> Baseline (no RAG) - querying LLM parametric memory ...")
         t0 = time.time()
         baseline_answer = answer_no_rag(question, model=model)
@@ -936,7 +801,7 @@ def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> No
 
         print()
 
-        # --- SPARQL-RAG ---
+        # RAG: query the graph and build an answer
         print("  >> SPARQL-RAG - querying knowledge graph and generating answer ...")
         t1 = time.time()
         sparql_query = generate_sparql(question, schema, model=model)
@@ -965,11 +830,9 @@ def run_evaluation(g: Graph, schema: str, model: str, enable_repair: bool) -> No
 
 def interactive_loop(g: Graph, schema: str, model: str, enable_repair: bool) -> None:
     """
-    Run an interactive question-answering loop in the terminal.
-    The user types a natural-language medical question; the system returns
-    both a baseline LLM answer and a SPARQL-RAG answer for comparison.
-
-    Type 'quit', 'exit', or Ctrl-C to stop.
+    Run an interactive chat loop.
+    The user types a medical question; both baseline and RAG answers are shown.
+    Type 'quit' or press Ctrl-C to stop.
     """
     _print_banner("Medical Knowledge Graph - SPARQL-RAG Chatbot")
     print(f"Model : {model}")
@@ -1081,35 +944,25 @@ def main() -> None:
 
     enable_repair = not args.no_repair
 
-    # ------------------------------------------------------------------
-    # --ollama-check: just verify connectivity and exit
-    # ------------------------------------------------------------------
+    # If --ollama-check: test connection and exit
     if args.ollama_check:
         ok = check_ollama(args.model)
         sys.exit(0 if ok else 1)
 
-    # ------------------------------------------------------------------
     # Load the knowledge graph
-    # ------------------------------------------------------------------
     g = load_graph(args.graph)
 
-    # ------------------------------------------------------------------
-    # Build schema summary (done once, reused for all queries)
-    # ------------------------------------------------------------------
+    # Build schema summary once and reuse it for all queries
     print("[INFO] Building schema summary ...")
     schema = build_schema_summary(g)
     print(f"[INFO] Schema summary: {len(schema)} characters")
 
-    # ------------------------------------------------------------------
-    # --eval: run the evaluation suite and exit
-    # ------------------------------------------------------------------
+    # If --eval: run the test questions and exit
     if args.eval:
         run_evaluation(g, schema, model=args.model, enable_repair=enable_repair)
         sys.exit(0)
 
-    # ------------------------------------------------------------------
-    # Default: interactive loop
-    # ------------------------------------------------------------------
+    # Default: start the interactive chat
     interactive_loop(g, schema, model=args.model, enable_repair=enable_repair)
 
 

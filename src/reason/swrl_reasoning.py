@@ -2,8 +2,8 @@
 TD5 - Part 1: SWRL Reasoning with OWLReady2
 Usage: python src/reason/swrl_reasoning.py
 
-Loads family.owl and applies OWL reasoning (HermiT or Pellet) to infer
-which individuals are classified as OldPerson via the embedded SWRL rule:
+Loads family.owl and runs OWL reasoning (HermiT or Pellet).
+Finds who becomes an OldPerson using this rule:
     Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p)
 """
 
@@ -171,7 +171,7 @@ def main() -> None:
 
 
 def _apply_rule_manually(onto) -> None:
-    """Fallback: manually apply the SWRL rule when no reasoner is available."""
+    """Apply the SWRL rule by hand when no reasoner works."""
     print("Manually applying rule: Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p)")
     count = 0
     for ind in list(onto.individuals()):
@@ -193,12 +193,11 @@ def _apply_rule_manually(onto) -> None:
 
 def run_medical_swrl() -> None:
     """
-    Apply a SWRL-style rule on the medical KB:
+    Apply a SWRL rule on the medical KB:
         Disease(?d) ^ hasSymptom(?d, ?s) -> affectedBy(?s, ?d)
 
-    This derives the inverse relation 'affectedBy' from 'hasSymptom'.
-    Implemented manually with rdflib (OWLReady2 is not used here since the
-    medical KB is in NT/Turtle format, not OWL/XML).
+    This adds an 'affectedBy' triple for each 'hasSymptom' triple.
+    Done manually with rdflib (the medical KB is in NT/Turtle, not OWL/XML).
     """
     print("\n" + "=" * 60)
     print("  SWRL Rule on Medical KB")

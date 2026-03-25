@@ -2,32 +2,25 @@
 entity_linking.py — Step 2: Entity Linking to Wikidata
 =======================================================
 
-Links entities from the initial RDF Knowledge Base to Wikidata using the
-Wikidata Search API. Generates an alignment graph (owl:sameAs triples) and
-a CSV mapping file recording confidence scores.
+Searches Wikidata for each entity in the knowledge base.
+Saves an alignment.ttl file (owl:sameAs links) and entity_mapping.csv.
 
 Usage:
     python src/kg/entity_linking.py
 
 Input:
-    kg_artifacts/medical_kb_initial.ttl    — Initial RDF Knowledge Base
+    kg_artifacts/medical_kb_initial.ttl
 
 Output:
-    kg_artifacts/alignment.ttl             — owl:sameAs alignment triples + predicate
-                                             alignments from the ontology
-    kg_artifacts/entity_mapping.csv        — CSV: private_entity, external_uri, confidence
+    kg_artifacts/alignment.ttl       — owl:sameAs links + predicate alignments
+    kg_artifacts/entity_mapping.csv  — entity, wikidata_uri, confidence score
 
-Confidence scoring:
-    1.0 — Wikidata label matches our entity label exactly (case-insensitive)
-    0.8 — Our entity label is a substring of the Wikidata result description
-    0.6 — Any Wikidata result was returned (fallback)
+Confidence score:
+    1.0 — exact label match
+    0.8 — label found in description
+    0.6 — any result returned
 
-If no Wikidata match is found (or confidence < 0.6), an ontological definition
-triple is added instead:
-    <uri> rdf:type owl:Class
-    <uri> rdfs:subClassOf med:<EntityClass>
-
-Rate limiting: 0.5 s delay between API calls (polite usage of the public API).
+Rate limiting: 0.5 s between API calls.
 """
 
 import csv
@@ -64,10 +57,10 @@ WD   = Namespace("http://www.wikidata.org/entity/")
 WDT  = Namespace("http://www.wikidata.org/prop/direct/")
 
 WIKIDATA_API    = "https://www.wikidata.org/w/api.php"
-API_RATE_LIMIT  = 0.5   # seconds between consecutive API calls
-MIN_CONFIDENCE  = 0.6   # threshold below which we skip the link
+API_RATE_LIMIT  = 0.5   # wait 0.5 seconds between API calls
+MIN_CONFIDENCE  = 0.6   # skip links below this score
 
-# Medical class URIs that we wish to link
+# Medical entity types to link
 MEDICAL_CLASSES = {
     MED.Disease,
     MED.Symptom,
@@ -76,7 +69,7 @@ MEDICAL_CLASSES = {
     MED.MedicalSpecialty,
 }
 
-# Map class URI → label string (for subClassOf fallback triples)
+# Class labels used in fallback triples when no Wikidata match is found
 CLASS_LABEL_MAP = {
     MED.Disease:          "Disease",
     MED.Symptom:          "Symptom",
@@ -91,15 +84,9 @@ CLASS_LABEL_MAP = {
 
 def search_wikidata(label: str, retries: int = 2) -> list[dict]:
     """
-    Search Wikidata for entities matching *label*.
-
-    Returns a list of up to 3 result dicts, each with keys:
-        id          — QID (e.g. 'Q12078')
-        label       — Wikidata display label
-        description — Short description string (may be absent)
-
-    On HTTP error or timeout, retries up to *retries* times before
-    returning an empty list.
+    Search Wikidata for a label. Returns up to 3 results.
+    Each result has: id (QID), label, description.
+    Returns an empty list if the search fails.
     """
     params = {
         "action":   "wbsearchentities",
@@ -131,19 +118,15 @@ def search_wikidata(label: str, retries: int = 2) -> list[dict]:
             return []
 
         if attempt < retries:
-            time.sleep(1.0)  # back-off before retry
+            time.sleep(1.0)  # wait before retrying
 
     return []
 
 
 def compute_confidence(query_label: str, result: dict) -> float:
     """
-    Compute a confidence score for a Wikidata search result.
-
-    Scoring rules:
-        1.0  — result label matches query_label exactly (case-insensitive)
-        0.8  — query_label is a substring of the result description
-        0.6  — any result was returned (lowest accepted confidence)
+    Score how well a Wikidata result matches the query label.
+    1.0 = exact match, 0.8 = partial match, 0.6 = any result.
     """
     wd_label = result.get("label", "").lower().strip()
     wd_desc  = result.get("description", "").lower().strip()
@@ -162,23 +145,18 @@ def compute_confidence(query_label: str, result: dict) -> float:
 
 def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
     """
-    For every entity of a medical type in *kb_graph*, attempt to find a
-    matching Wikidata QID.
-
-    Populates *align_graph* with:
-      - owl:sameAs triples for matched entities
-      - rdf:type owl:Class + rdfs:subClassOf for unmatched entities
-
-    Returns a list of mapping records for CSV output.
+    Search Wikidata for each medical entity in kb_graph.
+    Adds owl:sameAs triples to align_graph for matched entities.
+    Returns a list of mapping records for the CSV file.
     """
     mapping_records: list[dict] = []
 
-    # Collect (uri, label, class_uri) for every medical entity
+    # Collect all medical entities with their labels
     entities_to_link: list[tuple[URIRef, str, URIRef]] = []
 
     for class_uri in MEDICAL_CLASSES:
         for subj in kb_graph.subjects(RDF.type, class_uri):
-            # Get the rdfs:label (prefer English, fall back to any)
+            # Use English rdfs:label; fall back to URI local name
             label_val = None
             for lbl in kb_graph.objects(subj, RDFS.label):
                 if isinstance(lbl, Literal):
@@ -186,12 +164,11 @@ def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
                         label_val = str(lbl)
                         break
             if label_val is None:
-                # Derive from URI local name as fallback
                 label_val = str(subj).replace(str(MED), "").replace("_", " ")
 
             entities_to_link.append((subj, label_val, class_uri))
 
-    # Deduplicate by URI
+    # Remove duplicate URIs
     seen_uris: set[str] = set()
     unique_entities: list[tuple[URIRef, str, URIRef]] = []
     for item in entities_to_link:
@@ -210,7 +187,7 @@ def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
         if idx % 20 == 0 or idx == 1:
             print(f"  Progress: {idx}/{total} entities processed ...")
 
-        # Query Wikidata
+        # Search Wikidata for this entity
         results = search_wikidata(label)
         time.sleep(API_RATE_LIMIT)
 
@@ -222,7 +199,7 @@ def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
                 qid      = top["id"]
                 wd_uri   = WD[qid]
 
-                # Add alignment triple
+                # Link our entity to Wikidata
                 align_graph.add((uri, OWL.sameAs, wd_uri))
 
                 mapping_records.append({
@@ -233,7 +210,7 @@ def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
                 linked += 1
                 continue
 
-        # --- Fallback: define as owl:Class if not linked ---
+        # No Wikidata match: add a basic class definition instead
         not_found += 1
         align_graph.add((uri, RDF.type, OWL.Class))
         align_graph.add((uri, RDFS.subClassOf, class_uri))
@@ -254,10 +231,8 @@ def link_entities(kb_graph: Graph, align_graph: Graph) -> list[dict]:
 
 def add_predicate_alignments(align_graph: Graph) -> None:
     """
-    Add the four predicate equivalence triples that map med: properties
-    to their Wikidata equivalents. These mirror the owl:equivalentProperty
-    axioms declared in ontology.ttl and make the alignment graph
-    self-contained.
+    Link med: predicates to their Wikidata equivalents using owl:equivalentProperty.
+    These mirror the same axioms in ontology.ttl.
     """
     alignments = [
         (MED.hasSymptom,    WDT.P780),
@@ -267,7 +242,7 @@ def add_predicate_alignments(align_graph: Graph) -> None:
     ]
     for med_prop, wdt_prop in alignments:
         align_graph.add((med_prop, OWL.equivalentProperty, wdt_prop))
-        # Also record the inverse direction for completeness
+        # Also add the inverse direction
         align_graph.add((wdt_prop, OWL.equivalentProperty, med_prop))
 
     print(f"  Added {len(alignments) * 2} predicate alignment triples.")
@@ -278,7 +253,7 @@ def add_predicate_alignments(align_graph: Graph) -> None:
 # ==============================================================================
 
 def main() -> None:
-    """Orchestrate the entity-linking pipeline."""
+    """Run the entity linking pipeline."""
     print("=" * 70)
     print("Step 2 — Entity Linking to Wikidata")
     print("=" * 70)

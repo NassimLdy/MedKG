@@ -1,28 +1,26 @@
 """
-build_kb.py — Step 1: Initial Knowledge Base Construction
-==========================================================
+build_kb.py — Step 1: Build the Initial Knowledge Base
+=======================================================
 
-Reads the IE CSV files (extracted_knowledge.csv and candidate_triples.csv)
-and constructs an initial RDF Knowledge Base in Turtle format using rdflib.
+Reads the NER and relation CSV files and builds an RDF graph in Turtle format.
 
 Usage:
     python src/kg/build_kb.py
 
 Input:
-    data/extracted_knowledge.csv   — entities with NER labels
-    data/candidate_triples.csv     — subject-relation-object triples
+    data/extracted_knowledge.csv   — entities found by NER
+    data/candidate_triples.csv     — (subject, relation, object) triples
 
 Output:
-    kg_artifacts/medical_kb_initial.ttl    — RDF Knowledge Base (Turtle serialization)
+    kg_artifacts/medical_kb_initial.ttl    — RDF Knowledge Base file
 
-Logic:
-    1. Reads extracted_knowledge.csv; keeps only medical entity types.
-    2. Creates a URI for each entity using a slugify convention.
-    3. Adds rdf:type, rdfs:label, and med:fromSource triples.
-    4. Reads candidate_triples.csv; skips co-occurrence rows (relation ends
-       with '*') and rows with empty subject/object fields.
-    5. Creates relation triples in the med: namespace.
-    6. Serializes the graph and prints statistics.
+Steps:
+    1. Read entities; keep only medical types (DISEASE, SYMPTOM, etc.).
+    2. Create a URI for each entity (e.g. med:diabetes).
+    3. Add rdf:type, rdfs:label, and med:fromSource triples.
+    4. Read triples; skip co-occurrence rows (relation ends with '*').
+    5. Add relation triples in the med: namespace.
+    6. Save the graph and print statistics.
 """
 
 import os
@@ -41,7 +39,7 @@ except ImportError:
 # Configuration
 # ==============================================================================
 
-# Resolve paths relative to the MedKG project root (two levels up from src/kg/)
+# Project directory paths
 SCRIPT_DIR   = Path(__file__).resolve().parent          # src/kg/
 SRC_DIR      = SCRIPT_DIR.parent                        # src/
 ROOT_DIR     = SRC_DIR.parent                           # MedKG/
@@ -51,12 +49,12 @@ INPUT_TRIPLES  = ROOT_DIR / "data" / "candidate_triples.csv"
 OUTPUT_KB      = ROOT_DIR / "kg_artifacts" / "medical_kb_initial.ttl"
 ONTOLOGY_FILE  = ROOT_DIR / "kg_artifacts" / "ontology.ttl"
 
-# Namespace definitions
+# RDF namespace definitions
 MED_NS   = "http://medkg.local/"
 MED      = Namespace(MED_NS)
 WIKIDATA = Namespace("http://www.wikidata.org/entity/")
 
-# Labels we keep from extracted_knowledge.csv
+# Entity types to include (others are ignored)
 KEPT_LABELS = {
     "DISEASE":           MED.Disease,
     "SYMPTOM":           MED.Symptom,
@@ -65,7 +63,7 @@ KEPT_LABELS = {
     "MEDICAL_SPECIALTY": MED.MedicalSpecialty,
 }
 
-# Map relation strings (from candidate_triples) to med: predicates
+# Map relation names to their med: predicate URIs
 RELATION_MAP = {
     "hasSymptom":   MED.hasSymptom,
     "hasTreatment": MED.hasTreatment,
@@ -79,20 +77,8 @@ RELATION_MAP = {
 
 def slugify(text: str) -> str:
     """
-    Convert an entity label to a URL-safe slug.
-
-    Steps:
-      1. Strip leading/trailing whitespace.
-      2. Lowercase.
-      3. Replace spaces and hyphens with underscores.
-      4. Remove characters that are not alphanumeric or underscore.
-      5. Collapse multiple underscores into one.
-      6. Strip leading/trailing underscores.
-
-    Examples:
-      "Type 2 diabetes" → "type_2_diabetes"
-      "blurred vision"  → "blurred_vision"
-      "ophthalmologist" → "ophthalmologist"
+    Convert an entity label to a URI-safe slug.
+    Example: "Type 2 diabetes" → "type_2_diabetes"
     """
     text = text.strip().lower()
     text = re.sub(r"[\s\-]+", "_", text)
@@ -103,15 +89,12 @@ def slugify(text: str) -> str:
 
 
 def make_entity_uri(entity: str) -> URIRef:
-    """Return the full med: URI for an entity label."""
+    """Build the med: URI for an entity (e.g. med:diabetes)."""
     return MED[slugify(entity)]
 
 
 def load_ontology(graph: Graph) -> None:
-    """
-    Import the ontology definitions from ontology.ttl into the graph
-    so that all class and property URIs are formally declared.
-    """
+    """Load class and property definitions from ontology.ttl into the graph."""
     if ONTOLOGY_FILE.exists():
         try:
             graph.parse(str(ONTOLOGY_FILE), format="turtle")
@@ -128,14 +111,9 @@ def load_ontology(graph: Graph) -> None:
 
 def build_entities(graph: Graph) -> dict[str, URIRef]:
     """
-    Read extracted_knowledge.csv and add entity triples to the graph.
-
-    For each row whose 'label' is in KEPT_LABELS:
-      - <uri> rdf:type  med:<LabelClass>
-      - <uri> rdfs:label "<entity text>"@en
-      - <uri> med:fromSource <source_url>
-
-    Returns a dict mapping slugified entity → URIRef (for later use).
+    Read extracted_knowledge.csv and add entities to the RDF graph.
+    For each entity, adds: rdf:type, rdfs:label, and med:fromSource triples.
+    Returns a dict mapping entity slug → URIRef.
     """
     entity_uris: dict[str, URIRef] = {}
     rows_read   = 0
@@ -160,7 +138,7 @@ def build_entities(graph: Graph) -> dict[str, URIRef]:
             uri = make_entity_uri(entity)
             rdf_class = KEPT_LABELS[label]
 
-            # Core triples
+            # Add the three core triples for this entity
             graph.add((uri, RDF.type,      rdf_class))
             graph.add((uri, RDFS.label,    Literal(entity, lang="en")))
             if source:
@@ -179,14 +157,9 @@ def build_entities(graph: Graph) -> dict[str, URIRef]:
 
 def build_relations(graph: Graph, entity_uris: dict[str, URIRef]) -> int:
     """
-    Read candidate_triples.csv and add valid relation triples to the graph.
-
-    Skipped rows:
-      - subject or object is empty/whitespace
-      - relation ends with '*' (co-occurrence, not a confirmed assertion)
-      - relation string not in RELATION_MAP
-
-    Returns the number of relation triples added.
+    Read candidate_triples.csv and add relation triples to the graph.
+    Skips rows with empty fields, co-occurrence triples (*), or unknown relations.
+    Returns the number of triples added.
     """
     rows_read     = 0
     triples_added = 0
@@ -205,23 +178,22 @@ def build_relations(graph: Graph, entity_uris: dict[str, URIRef]) -> int:
             relation = (row.get("relation") or "").strip()
             obj      = (row.get("object")   or "").strip()
 
-            # Skip empty subject or object
             if not subject or not obj:
                 skipped_empty += 1
                 continue
 
-            # Skip co-occurrence relations (relation ends with '*')
+            # Skip co-occurrence triples (marked with *)
             if relation.endswith("*"):
                 skipped_cooc += 1
                 continue
 
-            # Map relation string to med: predicate URI
+            # Skip unknown relation names
             pred_uri = RELATION_MAP.get(relation)
             if pred_uri is None:
                 skipped_map += 1
                 continue
 
-            # Build subject and object URIs
+            # Build URIs for subject and object
             subj_uri = make_entity_uri(subject)
             obj_uri  = make_entity_uri(obj)
 
@@ -241,15 +213,14 @@ def build_relations(graph: Graph, entity_uris: dict[str, URIRef]) -> int:
 # ==============================================================================
 
 def main() -> None:
-    """Orchestrate the KB construction pipeline."""
+    """Run all steps to build the initial Knowledge Base."""
     print("=" * 70)
     print("Step 1 — Initial Knowledge Base Construction")
     print("=" * 70)
 
-    # Ensure output directory exists
     OUTPUT_KB.parent.mkdir(parents=True, exist_ok=True)
 
-    # Create the RDF graph and bind namespaces
+    # Create the RDF graph and register namespace prefixes
     g = Graph()
     g.bind("med",  MED)
     g.bind("rdf",  RDF)
@@ -258,25 +229,21 @@ def main() -> None:
     g.bind("xsd",  XSD)
     g.bind("wd",   WIKIDATA)
 
-    # Load the ontology schema into the same graph so it is included in output
     print("\n[1/3] Loading ontology schema...")
     load_ontology(g)
 
-    # Build entity triples
     print("\n[2/3] Processing entities (extracted_knowledge.csv)...")
     entity_uris = build_entities(g)
 
-    # Build relation triples
     print("\n[3/3] Processing relations (candidate_triples.csv)...")
     n_relations = build_relations(g, entity_uris)
 
-    # Serialize the graph
+    # Save the graph to a Turtle file
     g.serialize(destination=str(OUTPUT_KB), format="turtle")
 
-    # --- Statistics -----------------------------------------------------------
+    # Print statistics
     total_triples  = len(g)
-    # Count unique subjects that have rdf:type (i.e., declared entities)
-    entity_set     = set(g.subjects(RDF.type, None))
+    entity_set     = set(g.subjects(RDF.type, None))  # subjects with rdf:type
     relation_preds = {
         MED.hasSymptom, MED.hasTreatment, MED.hasMedication, MED.treatedBy
     }

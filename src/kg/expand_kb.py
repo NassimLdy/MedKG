@@ -1,41 +1,30 @@
 """
-expand_kb.py — Step 3: Knowledge Base Expansion via Wikidata SPARQL
-====================================================================
+expand_kb.py — Step 3: Expand the Knowledge Base via Wikidata
+=============================================================
 
-Expands the initial RDF Knowledge Base by executing 1-hop and 2-hop SPARQL
-queries against the Wikidata SPARQL endpoint for each entity that was
-successfully aligned (owl:sameAs to a wd: URI). The goal is to reach
-50,000–200,000 triples.
+Runs SPARQL queries on Wikidata to add more triples to the knowledge base.
+Target: 50,000–200,000 triples total.
 
 Usage:
     python src/kg/expand_kb.py
 
 Input:
-    kg_artifacts/medical_kb_initial.ttl   — Initial RDF Knowledge Base
-    kg_artifacts/alignment.ttl            — Alignment triples (owl:sameAs mappings)
+    kg_artifacts/medical_kb_initial.ttl   — initial KB
+    kg_artifacts/alignment.ttl            — owl:sameAs links to Wikidata
 
 Output:
-    kg_artifacts/medical_kb_expanded.nt   — Expanded KB in N-Triples format
-    kg_artifacts/stats.json               — Statistics: total_triples, total_entities,
-                                            total_relations
+    kg_artifacts/medical_kb_expanded.nt   — expanded KB (N-Triples format)
+    kg_artifacts/stats.json               — statistics
 
-Architecture:
-    1. Load initial KB and alignment.
-    2. Collect all aligned QIDs (entities with owl:sameAs → wd:*).
-    3. For each QID: 1-hop SPARQL query on Wikidata (LIMIT 500).
-       Keep only predicates in the medical whitelist.
-    4. 2-hop expansion: for each new wd: entity found in step 3,
-       run another SPARQL query (limited to 50 new entities).
-    5. Merge with original private KB triples.
-    6. Clean: remove non-English string literals, skip malformed URIs.
-    7. Deduplicate and serialize as N-Triples.
-    8. Save stats.json.
+Steps:
+    1. Load the initial KB and alignment.
+    2. Find all Wikidata QIDs from owl:sameAs links.
+    3. For each QID: run a 1-hop SPARQL query (get direct properties).
+    4. For new entities found in step 3: run 2-hop queries (capped at 50).
+    5. Clean: remove non-English text and bad URIs.
+    6. Save the result as N-Triples and write stats.json.
 
-Politeness:
-    - User-Agent: "MedKGBot/1.0 (educational project)"
-    - 1 second delay between SPARQL calls
-    - Retry once on HTTP error, then skip
-    - Progress printed every 10 entities
+Politeness: 1 second delay between SPARQL calls. Retry once on error.
 """
 
 import json
@@ -74,11 +63,11 @@ WDT = Namespace("http://www.wikidata.org/prop/direct/")
 
 # Wikidata SPARQL endpoint
 SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
-SPARQL_DELAY    = 1.0   # seconds between calls
-MAX_2HOP_ENTITIES = 50  # cap on 2-hop expansion to avoid explosion
-SPARQL_LIMIT    = 500   # max triples per SPARQL query
+SPARQL_DELAY    = 1.0   # seconds to wait between queries
+MAX_2HOP_ENTITIES = 50  # max entities for 2-hop expansion
+SPARQL_LIMIT    = 500   # max results per SPARQL query
 
-# HTTP headers required by Wikidata
+# HTTP headers for the Wikidata API
 HEADERS = {
     "User-Agent": "MedKGBot/1.0 (educational project)",
     "Accept":     "application/sparql-results+json",
@@ -119,11 +108,7 @@ WHITELIST_URIS = {
 # ==============================================================================
 
 def build_sparql_query(qid: str, limit: int = SPARQL_LIMIT) -> str:
-    """
-    Build a 1-hop SPARQL SELECT query that retrieves all direct properties
-    of entity *qid* whose predicate URI starts with the Wikidata direct
-    property prefix.
-    """
+    """Build a SPARQL query to get all direct properties of a Wikidata entity."""
     return f"""
 SELECT ?p ?o WHERE {{
   wd:{qid} ?p ?o .
@@ -135,12 +120,8 @@ LIMIT {limit}
 
 def execute_sparql(query: str, retries: int = 1) -> list[dict]:
     """
-    Execute a SPARQL query against the Wikidata endpoint.
-
-    Returns a list of binding dicts, each mapping variable names to
-    {'type': ..., 'value': ...} dicts.
-
-    On HTTP error, retries *retries* times. Returns [] on persistent failure.
+    Send a SPARQL query to Wikidata and return the result rows.
+    Returns an empty list if the query fails after retries.
     """
     for attempt in range(retries + 1):
         try:
@@ -182,10 +163,7 @@ def execute_sparql(query: str, retries: int = 1) -> list[dict]:
 # ==============================================================================
 
 def is_valid_uri(uri_str: str) -> bool:
-    """
-    Return True if *uri_str* is a plausibly well-formed URI (has scheme
-    and netloc/path). Blank node identifiers are excluded.
-    """
+    """Return True if the string is a valid URI (not a blank node)."""
     if not uri_str or uri_str.startswith("_:"):
         return False
     try:
@@ -196,14 +174,7 @@ def is_valid_uri(uri_str: str) -> bool:
 
 
 def is_acceptable_literal(obj) -> bool:
-    """
-    Return True for literals that should be kept:
-      - Non-string literals (numbers, dates, etc.)
-      - String literals with no language tag (plain strings)
-      - String literals tagged with 'en'
-
-    Filters out string literals in any non-English language.
-    """
+    """Return True for non-string literals or English string literals."""
     if not isinstance(obj, Literal):
         return True
     lang = obj.language
@@ -213,7 +184,7 @@ def is_acceptable_literal(obj) -> bool:
 
 
 def is_whitelisted_predicate(pred_uri: str) -> bool:
-    """Return True if the predicate URI is in the medical whitelist."""
+    """Return True if we want to keep triples with this predicate."""
     return pred_uri in WHITELIST_URIS
 
 
@@ -227,14 +198,9 @@ def sparql_bindings_to_triples(
     expanded_graph: Graph,
 ) -> set[str]:
     """
-    Convert SPARQL result bindings into rdflib triples and add them to
-    *expanded_graph*.
-
-    Only keeps triples whose predicate is in the whitelist.
-    Validates URIs and filters non-English literals.
-
-    Returns the set of new Wikidata entity QIDs discovered as objects
-    (for potential 2-hop expansion).
+    Convert SPARQL results into rdflib triples and add them to expanded_graph.
+    Only keeps whitelisted predicates and English literals.
+    Returns new Wikidata QIDs found (for 2-hop expansion).
     """
     subject_uri = WD[qid]
     new_qids: set[str] = set()
@@ -261,7 +227,7 @@ def sparql_bindings_to_triples(
             if not is_valid_uri(o_val):
                 continue
             obj_node = URIRef(o_val)
-            # Collect new Wikidata entity QIDs for 2-hop
+            # Save QIDs of new entities for 2-hop expansion
             if o_val.startswith("http://www.wikidata.org/entity/Q"):
                 qid_candidate = o_val.rsplit("/", 1)[-1]
                 new_qids.add(qid_candidate)
@@ -288,10 +254,8 @@ def sparql_bindings_to_triples(
 
 def run_expansion(aligned_qids: list[str], expanded_graph: Graph) -> set[str]:
     """
-    Execute 1-hop SPARQL expansion for all aligned QIDs.
-
-    Prints progress every 10 entities.
-    Returns the set of all new QIDs discovered (for 2-hop).
+    Run 1-hop SPARQL queries for all aligned QIDs.
+    Returns new QIDs found during expansion (for 2-hop queries).
     """
     all_new_qids: set[str] = set()
     total = len(aligned_qids)
@@ -316,7 +280,7 @@ def run_expansion(aligned_qids: list[str], expanded_graph: Graph) -> set[str]:
 # ==============================================================================
 
 def main() -> None:
-    """Orchestrate the KB expansion pipeline."""
+    """Run all steps to expand the Knowledge Base."""
     print("=" * 70)
     print("Step 3 — Knowledge Base Expansion via Wikidata SPARQL")
     print("=" * 70)
@@ -346,31 +310,29 @@ def main() -> None:
             qid = obj_str[len(WD_PREFIX):]
             aligned_qids.append(qid)
 
-    aligned_qids = list(dict.fromkeys(aligned_qids))  # deduplicate, preserve order
+    aligned_qids = list(dict.fromkeys(aligned_qids))  # remove duplicates
     print(f"\n[3/5] Found {len(aligned_qids)} aligned Wikidata QIDs.")
 
     if not aligned_qids:
         print("  Warning: No aligned entities found. "
               "The expanded KB will contain only the original triples.")
 
-    # --- Build the expanded graph (start with private KB + alignment) --------
+    # Start with KB + alignment triples, then add Wikidata data
     print("\n[4/5] Running SPARQL expansion ...")
     expanded_graph = Graph()
     expanded_graph.bind("med", MED)
     expanded_graph.bind("wd",  WD)
     expanded_graph.bind("wdt", WDT)
 
-    # Copy all private KB triples
     for triple in kb_graph:
         expanded_graph.add(triple)
-    print(f"  Copied {len(kb_graph)} private KB triples.")
+    print(f"  Copied {len(kb_graph)} KB triples.")
 
-    # Copy alignment triples
     for triple in align_graph:
         expanded_graph.add(triple)
     print(f"  Copied alignment triples. Graph now has {len(expanded_graph)} triples.")
 
-    # --- 1-hop expansion ------------------------------------------------------
+    # 1-hop: query each aligned entity
     print(f"\n  --- 1-hop expansion ({len(aligned_qids)} entities) ---")
     before_1hop = len(expanded_graph)
     all_new_qids = run_expansion(aligned_qids, expanded_graph)
@@ -378,7 +340,7 @@ def main() -> None:
     print(f"  1-hop added {after_1hop - before_1hop} triples. "
           f"Discovered {len(all_new_qids)} new QIDs for 2-hop.")
 
-    # --- 2-hop expansion (capped) --------------------------------------------
+    # 2-hop: query new entities discovered in step 3 (capped)
     already_expanded = set(aligned_qids)
     hop2_candidates = sorted(all_new_qids - already_expanded)[:MAX_2HOP_ENTITIES]
 
@@ -397,19 +359,16 @@ def main() -> None:
     after_2hop = len(expanded_graph)
     print(f"  2-hop added {after_2hop - before_2hop} triples.")
 
-    # --- Cleaning -------------------------------------------------------------
+    # Remove blank nodes, bad URIs, and non-English text
     print("\n  --- Cleaning triples ---")
     to_remove: list[tuple] = []
     for s, p, o in expanded_graph:
-        # Remove triples with blank-node subjects or predicates
         if isinstance(s, BNode) or isinstance(p, BNode):
             to_remove.append((s, p, o))
             continue
-        # Validate subject URI
         if isinstance(s, URIRef) and not is_valid_uri(str(s)):
             to_remove.append((s, p, o))
             continue
-        # Filter non-English string literals
         if isinstance(o, Literal) and not is_acceptable_literal(o):
             to_remove.append((s, p, o))
 
