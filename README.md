@@ -207,7 +207,15 @@ python src/rag/lab_rag_sparql_gen.py --model deepseek-r1:1.5b
    retrieved directly from the Knowledge Graph.
 7. Type `quit` to exit.
 
-[Screenshot of RAG demo - see reports/]
+![RAG Demo Screenshot](reports/rag_demo_screenshot.png)
+
+> **Large data files:** `kg_artifacts/medical_kb_expanded.nt` (117,579 triples, ~18 MB)
+> is not tracked in git due to size. Regenerate it with:
+> ```bash
+> python src/kg/expand_kb.py && python src/kg/expand_kb_bulk.py
+> ```
+> A filtered version (`medical_kb_filtered.nt`, 17,585 triples) is committed and
+> sufficient to run the full KGE and RAG pipeline.
 
 ---
 

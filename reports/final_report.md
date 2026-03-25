@@ -516,7 +516,7 @@ The failure is a model-capacity limitation, not a system design flaw.
 > `llama3.2:3b` or `mistral:7b` for reliable SPARQL generation.
 > `ollama pull llama3.2:3b && python src/rag/lab_rag_sparql_gen.py --eval --model llama3.2:3b`
 
-[Screenshot of RAG demo CLI - see reports/]
+![RAG Demo Screenshot](rag_demo_screenshot.png)
 
 ---
 
