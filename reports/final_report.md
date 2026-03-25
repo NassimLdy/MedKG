@@ -489,13 +489,15 @@ parametric memory only) and **SPARQL-RAG** modes:
 
 Model used: `deepseek-r1:1.5b` via Ollama. Graph: 117,579 triples.
 
-| # | Question | Baseline result | SPARQL generated | SPARQL valid? | Self-repair triggered? |
-|---|----------|-----------------|------------------|---------------|----------------------|
-| 1 | What are the symptoms of Diabetes? | Partially correct (hallucinated "confusion/hallucinations") | `SELECT ?symptom WHERE { ? med:Disease ...` | No | Yes (also failed) |
-| 2 | What medications are used to treat Hypertension? | Hallucinated drugs (simvastatin, atenprigil) | `SELECT ... FROM wdt:Medication WHERE med:hasDisease ...` | No | Yes (also failed) |
-| 3 | Which diseases have Asthma as a related condition? | Hallucinated (CLD, OPF, AHI) | Preamble text ("Here is the SPARQL query...") | No | Yes (also failed) |
-| 4 | What treatments are available for Cancer? | Correct but generic | Preamble text with SQL-style syntax | No | Yes (also failed) |
-| 5 | Which medical specialty handles Alzheimer's disease? | "Clinical neurology" (correct) | `SELECT ?med_specialty WHERE { med:medical_specialty hasTreatment ...}` | No | Yes (also failed) |
+| # | Question | Baseline correct? | SPARQL syntax valid? | Self-repair triggered? |
+|---|----------|-------------------|----------------------|----------------------|
+| 1 | What are the symptoms of Diabetes? | Partial (vague, no hallucination) | No (LEFT JOIN, SQL-style) | Yes (also failed) |
+| 2 | What medications are used to treat Hypertension? | No (invented: dbavosa, amlodipine) | No (garbage prefix "spdl") | Yes (also failed) |
+| 3 | Which diseases have Asthma as a related condition? | Partial (COPD correct, OPF/AHI hallucinated) | No (SELECT \<URI\> syntax) | Yes (also failed) |
+| 4 | What treatments are available for Cancer? | Partial (generic but no hallucination) | No (wdt:P769() function syntax) | Yes (also failed) |
+| 5 | Which medical specialty handles Alzheimer's? | **Yes** ("neurology") | No (missing prefix on ?medicalSpecialty) | Yes (timeout) |
+
+**Score — Baseline: 1.5/5 correct · SPARQL-RAG: 0/5 executed**
 
 **Analysis:** The self-repair loop triggered correctly on all 5 questions,
 demonstrating the mechanism works as designed. However, `deepseek-r1:1.5b`
