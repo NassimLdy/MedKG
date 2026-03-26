@@ -297,6 +297,15 @@ def parse_md(md_text):
 
         # Horizontal rule
         if re.match(r"^---+$", strip):
+            # Skip if the next non-empty line is a numbered section heading —
+            # those sections already get an explicit PageBreak, so the HR
+            # would land alone on a new page and create an empty-looking page.
+            j = i + 1
+            while j < len(lines) and not lines[j].strip():
+                j += 1
+            next_strip = lines[j].strip() if j < len(lines) else ""
+            if next_strip.startswith("## ") and len(next_strip) > 3 and next_strip[3].isdigit():
+                i += 1; continue
             out += [Spacer(1, 2),
                     HRFlowable(width="100%", thickness=0.4, color=MID_GREY),
                     Spacer(1, 2)]
