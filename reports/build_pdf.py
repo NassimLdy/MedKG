@@ -140,7 +140,7 @@ def build_cover():
     for label, value in [
         ("Course",      "Web Datamining &amp; Semantics"),
         ("Programme",   "DIA4 — M1 Data &amp; AI — ESILV"),
-        ("Group",       "Group C"),
+        ("Group",       "DIA4"),
         ("Authors",     "Nassim LOUDIYI &amp; Paul-Adrien LU-YEN-TUNG"),
         ("Year",        "2026"),
     ]:

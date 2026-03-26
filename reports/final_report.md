@@ -2,7 +2,7 @@
 
 **Course**: Web Datamining & Semantics
 **Programme**: DIA4 — M1 Data & AI — ESILV
-**Group**: Group C
+**Group**: DIA4
 **Authors**: Nassim LOUDIYI & Paul-Adrien LU-YEN-TUNG
 **Date**: 2026
 
