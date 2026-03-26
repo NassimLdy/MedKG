@@ -359,9 +359,14 @@ def parse_md(md_text):
             if img_path.exists():
                 max_w = W - 2*MARGIN - 0.8*cm
                 try:
-                    img_h = 5.0*cm if "rag" in path.lower() else 6.0*cm
-                    img = Image(str(img_path), width=max_w, height=img_h,
-                                kind="proportional")
+                    if "rag" in path.lower():
+                        # 95 % of text width; height capped to stay on the same page
+                        img_w = 0.95 * (W - 2*MARGIN)
+                        img   = Image(str(img_path), width=img_w, height=9.0*cm,
+                                      kind="proportional")
+                    else:
+                        img = Image(str(img_path), width=max_w, height=6.0*cm,
+                                    kind="proportional")
                     img.hAlign = "CENTER"
                     cap = ParagraphStyle("cap", fontSize=8, leading=11,
                                         fontName="Helvetica-Oblique",
