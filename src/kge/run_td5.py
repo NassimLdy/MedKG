@@ -1,12 +1,5 @@
-"""
-TD5 — Master Runner
+"""run_td5.py — Master runner for TD5: SWRL reasoning, data prep, KGE training, analysis.
 Usage: python src/kge/run_td5.py [--skip-swrl] [--skip-prepare] [--skip-train] [--skip-analyze]
-
-Runs all four TD5 steps in sequence with clear section headers:
-  Step 1: SWRL Reasoning    (src/reason/swrl_reasoning.py)
-  Step 2: Data Preparation  (src/kge/prepare_data.py)
-  Step 3: KGE Training      (src/kge/train_kge.py)
-  Step 4: Embedding Analysis (src/kge/analyze_kge.py)
 """
 
 import argparse
@@ -16,31 +9,14 @@ import os
 import time
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR    = os.path.dirname(SCRIPT_DIR)
 ROOT_DIR   = os.path.dirname(SRC_DIR)
 
-BANNER = """
-+============================================================+
-|   TD5 - Knowledge Reasoning with SWRL & KGE               |
-|   Medical Knowledge Base                                   |
-+============================================================+
-"""
 
-
-def banner(step: int, title: str) -> None:
-    width = 66
-    print("\n" + "#" * width)
-    print(f"#  STEP {step}: {title}")
-    print("#" * width)
-
-
+# Run a Python script as a subprocess and return True if it exited successfully.
 def run_script(script_path: str, extra_args: list[str] | None = None) -> bool:
-    """Run a Python script. Return True if it succeeds."""
+    """Run a Python script. Returns True on success."""
     cmd = [sys.executable, script_path] + (extra_args or [])
     print(f"\n  Running: {' '.join(cmd)}\n")
     start = time.time()
@@ -53,10 +29,6 @@ def run_script(script_path: str, extra_args: list[str] | None = None) -> bool:
     print(f"\n  [OK] {script_name} completed in {elapsed:.1f}s")
     return True
 
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -95,7 +67,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print(BANNER)
+    print("TD5 — Knowledge Reasoning with SWRL & KGE")
     print(f"  Python      : {sys.executable}")
     print(f"  Root dir    : {ROOT_DIR}")
     print(f"  Input KB    : {args.input}")
@@ -104,24 +76,18 @@ def main() -> None:
 
     results: dict[str, str] = {}
 
-    # ------------------------------------------------------------------
-    # Step 1 - SWRL Reasoning
-    # ------------------------------------------------------------------
     swrl_script = os.path.join(SRC_DIR, "reason", "swrl_reasoning.py")
     if not args.skip_swrl:
-        banner(1, "SWRL Reasoning (family.owl + OWLReady2)")
+        print("\nSTEP 1: SWRL Reasoning (family.owl + OWLReady2)")
         ok = run_script(swrl_script)
         results["Step 1 - SWRL"] = "OK" if ok else "FAILED"
     else:
         print("\n  [SKIPPED] Step 1: SWRL reasoning")
         results["Step 1 - SWRL"] = "SKIPPED"
 
-    # ------------------------------------------------------------------
-    # Step 2 - Data Preparation
-    # ------------------------------------------------------------------
     prepare_script = os.path.join(SCRIPT_DIR, "prepare_data.py")
     if not args.skip_prepare:
-        banner(2, "Data Preparation (N-Triples -> train/valid/test)")
+        print("\nSTEP 2: Data Preparation (N-Triples -> train/valid/test)")
         ok = run_script(
             prepare_script,
             ["--input", args.input, "--output-dir", args.data_dir],
@@ -131,12 +97,9 @@ def main() -> None:
         print("\n  [SKIPPED] Step 2: data preparation")
         results["Step 2 - Prepare"] = "SKIPPED"
 
-    # ------------------------------------------------------------------
-    # Step 3 - KGE Training
-    # ------------------------------------------------------------------
     train_script = os.path.join(SCRIPT_DIR, "train_kge.py")
     if not args.skip_train:
-        banner(3, "KGE Training (TransE + DistMult via PyKEEN)")
+        print("\nSTEP 3: KGE Training (TransE + DistMult via PyKEEN)")
         ok = run_script(
             train_script,
             ["--data-dir", args.data_dir, "--output-dir", args.output_dir],
@@ -146,12 +109,9 @@ def main() -> None:
         print("\n  [SKIPPED] Step 3: KGE training")
         results["Step 3 - Train"] = "SKIPPED"
 
-    # ------------------------------------------------------------------
-    # Step 4 - Embedding Analysis
-    # ------------------------------------------------------------------
     analyze_script = os.path.join(SCRIPT_DIR, "analyze_kge.py")
     if not args.skip_analyze:
-        banner(4, "Embedding Analysis (nearest neighbors, t-SNE, relations)")
+        print("\nSTEP 4: Embedding Analysis (nearest neighbors, t-SNE, relations)")
         transe_dir = os.path.join(args.output_dir.rstrip("/\\"), "TransE/")
         ok = run_script(
             analyze_script,
@@ -166,20 +126,13 @@ def main() -> None:
         print("\n  [SKIPPED] Step 4: embedding analysis")
         results["Step 4 - Analyze"] = "SKIPPED"
 
-    # ------------------------------------------------------------------
-    # Summary
-    # ------------------------------------------------------------------
-    width = 66
-    print("\n" + "=" * width)
-    print("  TD5 RUN SUMMARY")
-    print("=" * width)
+    print("\nTD5 — Run Summary")
     all_ok = True
     for step, status in results.items():
         icon = "[OK]" if status == "OK" else ("[SKIP]" if status == "SKIPPED" else "[FAIL]")
         print(f"  {icon:<8} {step}")
         if status == "FAILED":
             all_ok = False
-    print("=" * width)
 
     if all_ok:
         print("\n  All steps completed successfully.")

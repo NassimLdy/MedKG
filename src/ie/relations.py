@@ -1,18 +1,6 @@
-"""
-Lab 1 – Phase 2b: Relation Extraction
-======================================
-Reads crawler_output.jsonl and finds (subject, relation, object) triples.
-Two entities in the same sentence are linked by the verb between them.
-
-Target relations: hasSymptom | hasTreatment | hasMedication | treatedBy
-
-Output: data/candidate_triples.csv with columns:
-  subject | relation | object | subject_label | object_label
-  sentence | source_url
-
-Usage:
-    python src/ie/relations.py
-    python src/ie/relations.py --input data/crawler_output.jsonl
+"""Lab 1 – Relation Extraction. Finds (subject, relation, object) triples in articles.
+Output: candidate_triples.csv (subject, relation, object, labels, sentence, url)
+Usage: python src/ie/relations.py [--input PATH] [--output PATH]
 """
 
 import argparse
@@ -29,12 +17,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Verb → relation mapping
-# ---------------------------------------------------------------------------
-
-# When a verb connects a disease to another entity, we map it to a relation.
 
 SYMPTOM_VERBS = {
     "cause", "present", "include", "manifest", "produce", "trigger",
@@ -55,10 +37,7 @@ SPECIALTY_VERBS = {
     "oversee",
 }
 
-# Only diseases can be the subject of a relation
 DISEASE_LABELS = {"DISEASE"}
-
-# Expected object type for each relation
 RELATION_OBJECT_LABELS = {
     "hasSymptom": {"SYMPTOM"},
     "hasTreatment": {"TREATMENT"},
@@ -66,16 +45,11 @@ RELATION_OBJECT_LABELS = {
     "treatedBy": {"MEDICAL_SPECIALTY"},
 }
 
-# All medical entity labels (same as in ner.py)
 MEDICAL_LABELS = {"DISEASE", "SYMPTOM", "TREATMENT", "MEDICATION", "MEDICAL_SPECIALTY"}
 
 
-# ---------------------------------------------------------------------------
-# Load a spaCy model with the same medical EntityRuler as ner.py
-# ---------------------------------------------------------------------------
-
 def _build_ruler(nlp):
-    """Add medical term rules from ner.py to the spaCy pipeline."""
+    """Add medical term rules to the spaCy pipeline."""
     try:
         import sys
         import os
@@ -85,24 +59,17 @@ def _build_ruler(nlp):
         from ner import build_medical_ruler
         return build_medical_ruler(nlp)
     except ImportError:
-        # If ner.py cannot be imported, continue without medical patterns
         logger.warning("Could not import ner.py – medical entity patterns disabled")
         return nlp
 
-
-# ---------------------------------------------------------------------------
-# Relation helpers
-# ---------------------------------------------------------------------------
 
 def _lemma(token) -> str:
     return token.lemma_.lower()
 
 
+# Map a (verb, subject-type, object-type) combination to a relation name.
 def verb_to_relation(verb_lemma: str, subj_label: str, obj_label: str) -> str | None:
-    """
-    Return the relation name for a (subject, verb, object) combination.
-    Returns None if no matching relation exists.
-    """
+    """Return the relation name for a (subject, verb, object) combination, or None."""
     if subj_label not in DISEASE_LABELS:
         return None
 
@@ -123,36 +90,24 @@ def _get_ent_label(token, ent_map: dict) -> str | None:
     return ent_map.get(token.i)
 
 
-# ---------------------------------------------------------------------------
-# Per-sentence extraction
-# ---------------------------------------------------------------------------
-
+# Extract relation triples from one sentence via verb paths and co-occurrence.
 def extract_from_sentence(sent, ent_map: dict) -> list[dict]:
-    """
-    Find relation triples in one sentence.
-
-    Step 1: Look for verbs that connect two medical entities (dependency path).
-    Step 2: If two entities appear in the same sentence, add a weaker triple
-            marked with * (co-occurrence, not confirmed by a verb).
-    """
+    """Find relation triples in one sentence using verb paths and co-occurrence."""
     triples: list[dict] = []
     sentence_text = sent.text.strip().replace("\n", " ")
 
-    # Build a list of entities present in this sentence
     sent_ents = [(tok, _get_ent_label(tok, ent_map)) for tok in sent
                  if _get_ent_label(tok, ent_map) is not None]
 
     if len(sent_ents) < 2:
         return triples
 
-    # --- Step 1: Verb-based triples (dependency path) ---
     for token in sent:
         if token.pos_ not in {"VERB", "AUX"}:
             continue
 
         verb_lemma = _lemma(token)
 
-        # Collect subjects and objects attached to this verb
         subjects = []
         objects = []
 
@@ -176,9 +131,7 @@ def extract_from_sentence(sent, ent_map: dict) -> list[dict]:
                         "sentence": sentence_text[:300],
                     })
 
-    # --- Step 2: Co-occurrence fallback ---
-    # If a disease and another medical entity appear in the same sentence,
-    # add a weaker triple marked with * (lower confidence).
+    # Co-occurrence fallback: disease + any medical entity in same sentence
     disease_ents = [(t, l) for t, l in sent_ents if l == "DISEASE"]
     for dis_tok, _ in disease_ents:
         for obj_tok, obj_label in sent_ents:
@@ -195,7 +148,6 @@ def extract_from_sentence(sent, ent_map: dict) -> list[dict]:
             else:
                 continue
 
-            # Do not add if already found in step 1
             already = any(
                 t["subject"] == dis_tok.text and t["relation"] == rel
                 and t["object"] == obj_tok.text
@@ -204,7 +156,7 @@ def extract_from_sentence(sent, ent_map: dict) -> list[dict]:
             if not already:
                 triples.append({
                     "subject": dis_tok.text,
-                    "relation": rel + "*",   # * means co-occurrence (not confirmed by verb)
+                    "relation": rel + "*",   # * = co-occurrence (not verb-confirmed)
                     "object": obj_tok.text,
                     "subject_label": "DISEASE",
                     "object_label": obj_label,
@@ -214,10 +166,7 @@ def extract_from_sentence(sent, ent_map: dict) -> list[dict]:
     return triples
 
 
-# ---------------------------------------------------------------------------
-# Full document processing
-# ---------------------------------------------------------------------------
-
+# Extract all relation triples from every sentence in one article.
 def process_document(nlp, text: str, url: str) -> list[dict]:
     """Extract all relation triples from one article."""
     records: list[dict] = []
@@ -232,7 +181,6 @@ def process_document(nlp, text: str, url: str) -> list[dict]:
             logger.warning("spaCy error: %s", exc)
             continue
 
-        # Build a map: token index → entity label (for fast lookup)
         ent_map: dict[int, str] = {}
         for ent in doc.ents:
             for tok in ent:
@@ -250,19 +198,13 @@ def process_document(nlp, text: str, url: str) -> list[dict]:
     return records
 
 
-# ---------------------------------------------------------------------------
-# Main pipeline
-# ---------------------------------------------------------------------------
-
+# Run relation extraction on all articles and write candidate triples to CSV.
 def run_relations(
     input_file: str = "data/crawler_output.jsonl",
     output_file: str = "data/candidate_triples.csv",
     model: str = "en_core_web_trf",
 ) -> int:
-    """
-    Extract relation triples from all articles and save to output_file.
-    Returns the total number of triples written.
-    """
+    """Extract relation triples from all articles. Returns total triples written."""
     in_path = Path(input_file)
     out_path = Path(output_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -314,10 +256,6 @@ def run_relations(
     logger.info("Relation extraction complete — %d triples written to %s", total, output_file)
     return total
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Relation Extraction – Lab 1")

@@ -1,17 +1,5 @@
-"""
-expand_kb_bulk.py — Bulk KB Expansion using Wikidata SPARQL
-============================================================
-Adds more triples to the KB by querying Wikidata for each medical predicate.
-This is faster than expanding entity by entity.
-
-Example query used:
-    SELECT ?s ?o WHERE { ?s wdt:P780 ?o . } LIMIT 20000
-
-Usage:
-    python src/kg/expand_kb_bulk.py
-Output:
-    kg_artifacts/medical_kb_expanded.nt  (updated with new triples)
-    kg_artifacts/stats.json              (updated counts)
+"""expand_kb_bulk.py — Bulk KB expansion by querying Wikidata for each medical predicate.
+Usage: python src/kg/expand_kb_bulk.py
 """
 
 import json
@@ -30,28 +18,28 @@ HEADERS = {
     "Accept": "application/sparql-results+json",
 }
 
-# Predicate-controlled queries: (wikidata_pid, limit)
 BULK_PREDICATES = [
-    ("P780",  20000),   # symptoms and signs
-    ("P2176", 20000),   # drug used for treatment
-    ("P924",  20000),   # possible treatment
-    ("P1995", 10000),   # health specialty
-    ("P2175", 20000),   # medical condition treated
-    ("P2293", 20000),   # genetic association
-    ("P769",  20000),   # significant drug interaction
-    ("P279",  20000),   # subclass of
-    ("P31",   20000),   # instance of
-    ("P3781",  5000),   # has active ingredient
-    ("P828",   5000),   # has cause
-    ("P927",   5000),   # anatomical location
+    ("P780",  20000),
+    ("P2176", 20000),
+    ("P924",  20000),
+    ("P1995", 10000),
+    ("P2175", 20000),
+    ("P2293", 20000),
+    ("P769",  20000),
+    ("P279",  20000),
+    ("P31",   20000),
+    ("P3781",  5000),
+    ("P828",   5000),
+    ("P927",   5000),
 ]
 
 WDT_BASE = "http://www.wikidata.org/prop/direct/"
 WD_BASE  = "http://www.wikidata.org/entity/"
 
 
+# Fetch all entity triples for a given Wikidata predicate in a single bulk query.
 def sparql_query(pid: str, limit: int) -> list[tuple[str, str, str]]:
-    """Query Wikidata for all triples with a given predicate."""
+    """Query Wikidata for all triples with the given predicate."""
     import requests
     query = f"""
 SELECT ?s ?o WHERE {{
@@ -68,7 +56,7 @@ LIMIT {limit}
             timeout=60,
         )
         if resp.status_code == 429:
-            print(f"    Rate limited — waiting 30s...")
+            print("    Rate limited — waiting 30s...")
             time.sleep(30)
             return []
         resp.raise_for_status()
@@ -86,15 +74,15 @@ LIMIT {limit}
         return []
 
 
+# Load an N-Triples file into a set of (subject, predicate, object) string tuples.
 def load_nt(path: str) -> set[tuple[str, str, str]]:
-    """Load N-Triples file into a set of (s, p, o) string tuples."""
+    """Load an N-Triples file into a set of (s, p, o) string tuples."""
     triples = set()
     with open(path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            # Parse NTriples: <s> <p> <o> .
             parts = line.rstrip(" .").split("> <")
             if len(parts) == 3:
                 s = parts[0].lstrip("<")
@@ -104,17 +92,12 @@ def load_nt(path: str) -> set[tuple[str, str, str]]:
     return triples
 
 
+# Write a set of (s, p, o) string tuples to an N-Triples file.
 def write_nt(triples: set[tuple[str, str, str]], path: str) -> None:
-    """Write set of (s, p, o) as N-Triples."""
+    """Write (s, p, o) tuples as N-Triples."""
     with open(path, "w", encoding="utf-8") as f:
         for s, p, o in sorted(triples):
             f.write(f"<{s}> <{p}> <{o}> .\n")
-
-
-def print_section(title: str) -> None:
-    print("\n" + "=" * 66)
-    print(f"  {title}")
-    print("=" * 66)
 
 
 def main() -> None:
@@ -124,14 +107,11 @@ def main() -> None:
         print("ERROR: requests not installed. Run: pip install requests")
         sys.exit(1)
 
-    print_section("Predicate-Controlled Bulk Expansion")
-
-    # Load existing KB
+    print("Bulk Expansion via Wikidata")
     print(f"\n[1/3] Loading existing KB: {os.path.basename(INPUT_NT)}")
     existing = load_nt(INPUT_NT)
     print(f"  Existing triples: {len(existing):,}")
 
-    # Bulk expansion
     print(f"\n[2/3] Running {len(BULK_PREDICATES)} predicate queries on Wikidata...")
     new_triples: set[tuple[str, str, str]] = set()
 
@@ -142,15 +122,12 @@ def main() -> None:
         new_triples.update(result)
         added = len(new_triples) - before
         print(f"  {len(result):,} returned, {added:,} new")
-        time.sleep(2)   # polite delay
+        time.sleep(2)
 
     print(f"\n  New triples from bulk expansion: {len(new_triples):,}")
 
-    # Combine old and new triples, remove duplicates
     all_triples = existing | new_triples
-    print(f"  Total after merge (deduplicated): {len(all_triples):,}")
-
-    # Count unique entities and relations
+    print(f"  Total after merge: {len(all_triples):,}")
     entities = set()
     relations = set()
     for s, p, o in all_triples:
@@ -158,12 +135,7 @@ def main() -> None:
         entities.add(o)
         relations.add(p)
 
-    print_section("Final KB Statistics")
-    print(f"  Total triples   : {len(all_triples):,}")
-    print(f"  Total entities  : {len(entities):,}")
-    print(f"  Total relations : {len(relations):,}")
-
-    # Write output
+    print(f"\n  Triples: {len(all_triples):,}  |  Entities: {len(entities):,}  |  Relations: {len(relations):,}")
     print(f"\n[3/3] Writing {os.path.basename(OUTPUT_NT)} ...")
     write_nt(all_triples, OUTPUT_NT)
     print(f"  Written: {OUTPUT_NT}")

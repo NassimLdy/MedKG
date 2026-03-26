@@ -1,19 +1,13 @@
-"""
-TD5 - Part 3: Train KGE Models (TransE and DistMult)
-Usage: python src/kge/train_kge.py [--data-dir data/kge/] [--output-dir results/]
-
-Trains two embedding models on the medical knowledge graph using PyKEEN.
-Reports MRR, Hits@1, Hits@3, Hits@10.
-"""
+"""train_kge.py — Train TransE and DistMult on the medical KG using PyKEEN."""
 
 import os
 import sys
 import json
+import random
 import argparse
 
-# ---------------------------------------------------------------------------
-# PyKEEN import guard
-# ---------------------------------------------------------------------------
+import numpy as np
+
 try:
     from pykeen.pipeline import pipeline
     from pykeen.triples import TriplesFactory
@@ -26,17 +20,7 @@ except ImportError:
 import torch
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def print_section(title: str) -> None:
-    width = 64
-    print("\n" + "=" * width)
-    print(f"  {title}")
-    print("=" * width)
-
-
+# Load a TSV triples file into a PyKEEN TriplesFactory, optionally sharing entity/relation maps.
 def load_factory(path: str, entity_to_id=None, relation_to_id=None):
     """Load a set of triples from a TSV file into a TriplesFactory."""
     if not os.path.isfile(path):
@@ -51,6 +35,7 @@ def load_factory(path: str, entity_to_id=None, relation_to_id=None):
     return TriplesFactory.from_path(path)
 
 
+# Extract MRR and Hits@k scores from a PyKEEN pipeline result object.
 def extract_metrics(results) -> dict:
     """Read MRR and Hits@k scores from a PyKEEN training result."""
     metric_results = results.metric_results
@@ -66,15 +51,11 @@ def extract_metrics(results) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Training configuration
-# ---------------------------------------------------------------------------
-
-EMBEDDING_DIM = 50       # small dimension to save memory
+EMBEDDING_DIM = 50
 NUM_EPOCHS = 100
-BATCH_SIZE = 512         # large batch to reduce memory allocations
+BATCH_SIZE = 512
 LEARNING_RATE = 0.01
-NUM_NEGS_PER_POS = 5    # negative samples per positive triple
+NUM_NEGS_PER_POS = 5
 
 MODEL_CONFIGS = {
     "TransE": {
@@ -99,10 +80,6 @@ MODEL_CONFIGS = {
     },
 }
 
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -134,10 +111,7 @@ def main() -> None:
     valid_path = os.path.join(data_dir, "valid.txt")
     test_path = os.path.join(data_dir, "test.txt")
 
-    # ------------------------------------------------------------------
-    # Load triples factories
-    # ------------------------------------------------------------------
-    print_section("Loading Triples Factories")
+    print("\nLoading Triples Factories")
     print(f"  Data directory: {data_dir}")
 
     training_factory = load_factory(train_path)
@@ -158,13 +132,10 @@ def main() -> None:
     print(f"  Entities        : {training_factory.num_entities}")
     print(f"  Relations       : {training_factory.num_relations}")
 
-    # ------------------------------------------------------------------
-    # Train models
-    # ------------------------------------------------------------------
     all_results = {}
 
     for model_name, cfg in MODEL_CONFIGS.items():
-        print_section(f"Training {model_name}")
+        print(f"\nTraining {model_name}")
         print(f"  embedding_dim  = {EMBEDDING_DIM}")
         print(f"  num_epochs     = {NUM_EPOCHS}")
         print(f"  batch_size     = {BATCH_SIZE}")
@@ -175,7 +146,6 @@ def main() -> None:
         model_output_dir = os.path.join(output_dir, model_name)
         os.makedirs(model_output_dir, exist_ok=True)
 
-        # Pass loss_kwargs only if non-empty
         loss_kw = cfg["loss_kwargs"] if cfg["loss_kwargs"] else None
 
         try:
@@ -206,11 +176,9 @@ def main() -> None:
             all_results[model_name] = {"error": str(exc)}
             continue
 
-        # Save model
         result.save_to_directory(model_output_dir)
         print(f"  Model saved to: {model_output_dir}")
 
-        # Extract metrics
         metrics = extract_metrics(result)
         all_results[model_name] = metrics
 
@@ -220,10 +188,7 @@ def main() -> None:
         print(f"    Hits@3  : {metrics['Hits@3']:.4f}")
         print(f"    Hits@10 : {metrics['Hits@10']:.4f}")
 
-    # ------------------------------------------------------------------
-    # Comparison table
-    # ------------------------------------------------------------------
-    print_section("Model Comparison Table")
+    print("\nModel Comparison Table")
     header = f"{'Model':<12} {'MRR':>8} {'Hits@1':>8} {'Hits@3':>8} {'Hits@10':>9}"
     print(header)
     print("-" * len(header))
@@ -238,9 +203,6 @@ def main() -> None:
                 f"{metrics['Hits@10']:>9.4f}"
             )
 
-    # ------------------------------------------------------------------
-    # Save JSON results
-    # ------------------------------------------------------------------
     results_json_path = os.path.join(output_dir, "evaluation_results.json")
     with open(results_json_path, "w", encoding="utf-8") as fh:
         json.dump(
@@ -259,19 +221,11 @@ def main() -> None:
         )
     print(f"\n  Results saved to: {results_json_path}")
 
-    # ------------------------------------------------------------------
-    # Training data info for head/tail prediction reference
-    # ------------------------------------------------------------------
-    print_section("Entity/Relation Counts (for analysis)")
-    print(f"  Entities  : {training_factory.num_entities}")
+    print(f"\n  Entities  : {training_factory.num_entities}")
     print(f"  Relations : {training_factory.num_relations}")
 
-    # Train TransE on smaller subsets to see how size affects results
-    print_section("5.2 KB Size Sensitivity (TransE only)")
+    print("\n5.2 KB Size Sensitivity (TransE only)")
     print("  Testing with 20k, 50k, and full training set...")
-
-    import random
-    import numpy as np
 
     full_triples = training_factory.mapped_triples.numpy()
     total = len(full_triples)
@@ -284,7 +238,7 @@ def main() -> None:
 
     sensitivity_results = {}
     for label, n in size_labels:
-        print(f"\n  --- Size: {label} ({n} triples) ---")
+        print(f"\n  Size: {label} ({n} triples)")
         idx = np.random.choice(total, size=min(n, total), replace=False)
         sub_triples = full_triples[idx]
         sub_factory = TriplesFactory(
@@ -319,7 +273,7 @@ def main() -> None:
             print(f"    ERROR: {exc}")
             sensitivity_results[label] = {"error": str(exc)}
 
-    print_section("Size Sensitivity Summary")
+    print("\nSize Sensitivity Summary")
     header2 = f"{'Size':<8} {'MRR':>8} {'Hits@1':>8} {'Hits@10':>9}"
     print(header2)
     print("-" * len(header2))
@@ -329,7 +283,6 @@ def main() -> None:
         else:
             print(f"{label:<8} {m['MRR']:>8.4f} {m['Hits@1']:>8.4f} {m['Hits@10']:>9.4f}")
 
-    # Save sensitivity results
     all_results["size_sensitivity"] = sensitivity_results
     with open(results_json_path, "w", encoding="utf-8") as fh:
         json.dump(

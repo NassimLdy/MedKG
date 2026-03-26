@@ -1,16 +1,6 @@
-"""
-Lab 1 – Phase 2a: Named Entity Recognition (NER)
-=================================================
-Reads crawler_output.jsonl and finds medical entities in each article.
-Uses spaCy (en_core_web_trf) with a custom list of medical terms.
-Finds: DISEASE, SYMPTOM, TREATMENT, MEDICATION, MEDICAL_SPECIALTY.
-
-Output: extracted_knowledge.csv with columns:
-  entity | label | context | source_url | source_title
-
-Usage:
-    python src/ie/ner.py
-    python src/ie/ner.py --input data/crawler_output.jsonl --output data/extracted_knowledge.csv
+"""Lab 1 – Named Entity Recognition. Finds medical entities in crawled articles.
+Output: extracted_knowledge.csv (entity, label, context, source_url, source_title)
+Usage: python src/ie/ner.py [--input PATH] [--output PATH] [--model MODEL]
 """
 
 import argparse
@@ -27,10 +17,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Medical word lists – used to teach spaCy which terms to look for
-# ---------------------------------------------------------------------------
 
 DISEASES = [
     "diabetes", "type 1 diabetes", "type 2 diabetes", "gestational diabetes",
@@ -185,7 +171,6 @@ MEDICAL_SPECIALTIES = [
     "neurosurgery", "neurosurgeon",
 ]
 
-# Map each label to its list of terms
 MEDICAL_VOCAB: dict[str, list[str]] = {
     "DISEASE": DISEASES,
     "SYMPTOM": SYMPTOMS,
@@ -194,19 +179,13 @@ MEDICAL_VOCAB: dict[str, list[str]] = {
     "MEDICAL_SPECIALTY": MEDICAL_SPECIALTIES,
 }
 
-# Keep these standard spaCy labels too
 KEEP_SPACY_LABELS = {"PERSON", "ORG", "GPE", "DATE"}
-
-# All labels we keep in the output
 ALL_LABELS = set(MEDICAL_VOCAB.keys()) | KEEP_SPACY_LABELS
 
 
-# ---------------------------------------------------------------------------
-# Build EntityRuler patterns
-# ---------------------------------------------------------------------------
-
+# Convert a list of medical terms into spaCy EntityRuler pattern dicts.
 def make_patterns(label: str, terms: list[str]) -> list[dict]:
-    """Convert a list of terms into spaCy pattern dicts for the EntityRuler."""
+    """Convert term list into spaCy EntityRuler pattern dicts."""
     patterns = []
     for term in terms:
         tokens = term.split()
@@ -215,8 +194,9 @@ def make_patterns(label: str, terms: list[str]) -> list[dict]:
     return patterns
 
 
+# Add domain-specific medical entity patterns to the spaCy NLP pipeline.
 def build_medical_ruler(nlp: Language) -> Language:
-    """Add the medical term rules to spaCy (runs before the built-in NER)."""
+    """Add medical term rules to spaCy (runs before the built-in NER)."""
     ruler = nlp.add_pipe("entity_ruler", before="ner", config={"overwrite_ents": False})
     all_patterns: list[dict] = []
     for label, terms in MEDICAL_VOCAB.items():
@@ -226,24 +206,11 @@ def build_medical_ruler(nlp: Language) -> Language:
     return nlp
 
 
-# ---------------------------------------------------------------------------
-# NER processing
-# ---------------------------------------------------------------------------
-
-def get_sentence(token) -> str:
-    """Return the full sentence that contains this token."""
-    return token.sent.text.strip()
-
-
+# Run NER on one article and return de-duplicated entity records.
 def process_text(nlp: Language, text: str, url: str, title: str) -> list[dict]:
-    """
-    Find all medical entities in one article.
-    Returns a list of records with entity, label, context, source_url, source_title.
-    """
+    """Find all medical entities in one article. Returns a list of entity records."""
     records: list[dict] = []
-    seen: set[tuple[str, str]] = set()  # avoid saving the same entity twice
-
-    # spaCy cannot process more than ~1M characters at once; split if needed
+    seen: set[tuple[str, str]] = set()
     max_len = 900_000
     chunks = [text[i : i + max_len] for i in range(0, len(text), max_len)]
 
@@ -259,7 +226,6 @@ def process_text(nlp: Language, text: str, url: str, title: str) -> list[dict]:
                 continue
 
             ent_text = ent.text.strip()
-            # Skip single characters or numbers
             if len(ent_text) < 2 or ent_text.isdigit():
                 continue
 
@@ -268,7 +234,6 @@ def process_text(nlp: Language, text: str, url: str, title: str) -> list[dict]:
                 continue
             seen.add(key)
 
-            # Save the sentence where this entity appears
             try:
                 context = ent.sent.text.strip().replace("\n", " ")
             except Exception:
@@ -277,7 +242,7 @@ def process_text(nlp: Language, text: str, url: str, title: str) -> list[dict]:
             records.append({
                 "entity": ent_text,
                 "label": ent.label_,
-                "context": context[:300],   # limit to 300 characters
+                "context": context[:300],
                 "source_url": url,
                 "source_title": title,
             })
@@ -285,19 +250,13 @@ def process_text(nlp: Language, text: str, url: str, title: str) -> list[dict]:
     return records
 
 
-# ---------------------------------------------------------------------------
-# Main pipeline
-# ---------------------------------------------------------------------------
-
+# Run the full NER pipeline over all crawled articles and write results to CSV.
 def run_ner(
     input_file: str = "data/crawler_output.jsonl",
     output_file: str = "data/extracted_knowledge.csv",
     model: str = "en_core_web_trf",
 ) -> int:
-    """
-    Run NER on all articles in input_file and save results to output_file.
-    Returns the total number of entities found.
-    """
+    """Run NER on all articles and save results. Returns total entities found."""
     in_path = Path(input_file)
     out_path = Path(output_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -305,7 +264,6 @@ def run_ner(
     if not in_path.exists():
         raise FileNotFoundError(f"Input file not found: {in_path}")
 
-    # Load the spaCy language model
     logger.info("Loading spaCy model: %s", model)
     try:
         nlp = spacy.load(model)
@@ -318,7 +276,6 @@ def run_ner(
     nlp = build_medical_ruler(nlp)
     logger.info("Pipeline components: %s", nlp.pipe_names)
 
-    # Process each article one by one
     fieldnames = ["entity", "label", "context", "source_url", "source_title"]
     total = 0
 
@@ -351,10 +308,6 @@ def run_ner(
     logger.info("NER complete — %d entity records written to %s", total, output_file)
     return total
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="NER Pipeline – Lab 1")

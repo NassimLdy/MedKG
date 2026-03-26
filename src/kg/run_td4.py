@@ -1,27 +1,5 @@
-"""
-run_td4.py — Master Runner for TD4 Pipeline
-============================================
-
-Runs all three TD4 steps in order:
-    1. Build the initial KB from IE data     (build_kb.py)
-    2. Link entities to Wikidata             (entity_linking.py)
-    3. Expand the KB using Wikidata SPARQL   (expand_kb.py)
-
-Each step can be skipped with a flag.
-
-Usage:
-    python src/kg/run_td4.py
-    python src/kg/run_td4.py --skip-build
-    python src/kg/run_td4.py --skip-link
-    python src/kg/run_td4.py --skip-expand
-    python src/kg/run_td4.py --skip-build --skip-link
-
-Flags:
-    --skip-build    Skip Step 1; needs medical_kb_initial.ttl to exist
-    --skip-link     Skip Step 2; needs alignment.ttl to exist
-    --skip-expand   Skip Step 3
-
-Prints a summary table of output files and sizes at the end.
+"""run_td4.py — Master runner for the TD4 pipeline (build KB → link → expand).
+Usage: python src/kg/run_td4.py [--skip-build] [--skip-link] [--skip-expand]
 """
 
 import argparse
@@ -30,13 +8,9 @@ import sys
 import time
 from pathlib import Path
 
-# ==============================================================================
-# Configuration — expected output files
-# ==============================================================================
-
-SCRIPT_DIR = Path(__file__).resolve().parent   # src/kg/
-SRC_DIR    = SCRIPT_DIR.parent                 # src/
-ROOT_DIR   = SRC_DIR.parent                    # MedKG/
+SCRIPT_DIR = Path(__file__).resolve().parent
+SRC_DIR    = SCRIPT_DIR.parent
+ROOT_DIR   = SRC_DIR.parent
 
 OUTPUT_FILES = {
     "ontology.ttl":             ROOT_DIR / "kg_artifacts" / "ontology.ttl",
@@ -48,15 +22,9 @@ OUTPUT_FILES = {
 }
 
 
-# ==============================================================================
-# Step loading helpers
-# ==============================================================================
-
+# Dynamically import a Python file as a module by path.
 def load_module_from_file(name: str, file_path: Path):
-    """
-    Load a Python file as a module.
-    Return the module object, or exit if loading fails.
-    """
+    """Load a Python file as a module, or exit on failure."""
     if not file_path.exists():
         sys.exit(f"Error: Script not found: {file_path}")
 
@@ -69,14 +37,10 @@ def load_module_from_file(name: str, file_path: Path):
     return module
 
 
+# Load and run a pipeline step module, reporting elapsed time and success.
 def run_step(step_num: int, description: str, module_path: Path) -> bool:
-    """
-    Run the main() function of a pipeline step.
-    Return True if it succeeds, False if it fails.
-    """
-    print("\n" + "#" * 70)
-    print(f"# STEP {step_num}: {description}")
-    print("#" * 70)
+    """Run main() of a pipeline step. Returns True on success."""
+    print(f"\nSTEP {step_num}: {description}")
 
     start = time.time()
     try:
@@ -86,7 +50,7 @@ def run_step(step_num: int, description: str, module_path: Path) -> bool:
             return False
         module.main()
         elapsed = time.time() - start
-        print(f"\n  Step {step_num} completed in {elapsed:.1f}s.")
+        print(f"  Step {step_num} done in {elapsed:.1f}s.")
         return True
     except SystemExit as exc:
         print(f"  Step {step_num} exited: {exc}")
@@ -98,10 +62,6 @@ def run_step(step_num: int, description: str, module_path: Path) -> bool:
         return False
 
 
-# ==============================================================================
-# Summary printer
-# ==============================================================================
-
 def format_size(n_bytes: int) -> str:
     """Return a human-readable file size string."""
     for unit in ("B", "KB", "MB", "GB"):
@@ -112,41 +72,26 @@ def format_size(n_bytes: int) -> str:
 
 
 def print_summary(results: dict[str, bool]) -> None:
-    """Print a table showing step results and output file sizes."""
-    print("\n" + "=" * 70)
-    print("TD4 Pipeline — Final Summary")
-    print("=" * 70)
-
-    # Step results
-    print("\n  Step Results:")
+    """Print step results and output file sizes."""
+    print("\nTD4 — Summary")
+    print("  Step Results:")
     for step_name, success in results.items():
         status = "OK" if success else "SKIPPED / FAILED"
         print(f"    {step_name:<35} {status}")
 
-    # Output files
     print("\n  Output Files:")
-    print(f"    {'File':<35} {'Size':>10}   {'Status'}")
-    print("    " + "-" * 55)
     for fname, fpath in OUTPUT_FILES.items():
         if fpath.exists():
             size_str = format_size(fpath.stat().st_size)
-            print(f"    {fname:<35} {size_str:>10}   PRESENT")
+            print(f"    {fname:<35} {size_str:>10}   OK")
         else:
             print(f"    {fname:<35} {'—':>10}   MISSING")
 
-    print("=" * 70)
-
-
-# ==============================================================================
-# Argument parsing
-# ==============================================================================
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="TD4 Master Runner — Medical Knowledge Graph Pipeline",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__,
+        description="TD4 pipeline: build KB, link to Wikidata, expand."
     )
     parser.add_argument(
         "--skip-build",
@@ -166,23 +111,13 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-# ==============================================================================
-# Main
-# ==============================================================================
-
 def main() -> None:
     """Run all TD4 pipeline steps."""
     args = parse_args()
-
-    print("=" * 70)
-    print(" TD4 — Medical Knowledge Graph: Build, Link, Expand")
-    print("=" * 70)
-    print(f"\n  Working directory : {ROOT_DIR}")
-    print(f"  KG artifacts dir  : {ROOT_DIR / 'kg_artifacts'}")
-    print(f"  Data dir          : {ROOT_DIR / 'data'}")
+    print("TD4 — Medical Knowledge Graph: Build, Link, Expand")
+    print(f"  Root: {ROOT_DIR}")
     print()
 
-    # Make sure input CSV files exist before starting Step 1
     if not args.skip_build:
         data_entities = ROOT_DIR / "data" / "extracted_knowledge.csv"
         data_triples  = ROOT_DIR / "data" / "candidate_triples.csv"
@@ -195,67 +130,42 @@ def main() -> None:
     step_results: dict[str, bool] = {}
     overall_start = time.time()
 
-    # ------------------------------------------------------------------
-    # Step 1 — Build initial KB
-    # ------------------------------------------------------------------
+    # Step 1
     if args.skip_build:
         print("[SKIP] Step 1: Initial KB Construction")
         step_results["Step 1: Build KB"] = True
         if not (ROOT_DIR / "kg_artifacts" / "medical_kb_initial.ttl").exists():
-            print("  Warning: medical_kb_initial.ttl not found — "
-                  "subsequent steps may fail.")
+            print("  Warning: medical_kb_initial.ttl not found.")
     else:
-        success = run_step(
-            1, "Initial KB Construction",
-            SCRIPT_DIR / "build_kb.py"
-        )
+        success = run_step(1, "Initial KB Construction", SCRIPT_DIR / "build_kb.py")
         step_results["Step 1: Build KB"] = success
         if not success:
-            print("\n  Step 1 failed. Aborting pipeline.")
             print_summary(step_results)
             sys.exit(1)
 
-    # ------------------------------------------------------------------
-    # Step 2 — Entity Linking
-    # ------------------------------------------------------------------
+    # Step 2
     if args.skip_link:
         print("\n[SKIP] Step 2: Entity Linking")
         step_results["Step 2: Entity Linking"] = True
         if not (ROOT_DIR / "kg_artifacts" / "alignment.ttl").exists():
-            print("  Warning: alignment.ttl not found — "
-                  "expansion step may find no aligned entities.")
+            print("  Warning: alignment.ttl not found.")
     else:
-        success = run_step(
-            2, "Entity Linking to Wikidata",
-            SCRIPT_DIR / "entity_linking.py"
-        )
+        success = run_step(2, "Entity Linking to Wikidata", SCRIPT_DIR / "entity_linking.py")
         step_results["Step 2: Entity Linking"] = success
         if not success:
-            print("\n  Step 2 failed. Aborting pipeline.")
             print_summary(step_results)
             sys.exit(1)
 
-    # ------------------------------------------------------------------
-    # Step 3 — KB Expansion
-    # ------------------------------------------------------------------
+    # Step 3
     if args.skip_expand:
         print("\n[SKIP] Step 3: KB Expansion")
         step_results["Step 3: KB Expansion"] = True
     else:
-        success = run_step(
-            3, "KB Expansion via Wikidata SPARQL",
-            SCRIPT_DIR / "expand_kb.py"
-        )
+        success = run_step(3, "KB Expansion via Wikidata SPARQL", SCRIPT_DIR / "expand_kb.py")
         step_results["Step 3: KB Expansion"] = success
-        if not success:
-            print("\n  Step 3 failed (see errors above).")
-            step_results["Step 3: KB Expansion"] = False
 
-    # ------------------------------------------------------------------
-    # Final summary
-    # ------------------------------------------------------------------
     total_elapsed = time.time() - overall_start
-    print(f"\n  Total pipeline time: {total_elapsed:.1f}s")
+    print(f"\n  Total time: {total_elapsed:.1f}s")
     print_summary(step_results)
 
 

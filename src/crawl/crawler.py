@@ -1,12 +1,5 @@
-"""
-Lab 1 – Phase 1: Medical Web Crawler
-=====================================
-Downloads Wikipedia articles about medical topics using the Wikipedia API.
-The API returns clean plain text. No HTML parsing needed.
-
-Usage:
-    python src/crawl/crawler.py
-    python src/crawl/crawler.py --max-per-seed 10 --output data/crawler_output.jsonl
+"""Lab 1 – Medical Web Crawler. Downloads Wikipedia articles about medical topics.
+Usage: python src/crawl/crawler.py [--max-per-seed N] [--output PATH]
 """
 
 import argparse
@@ -22,10 +15,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
 
 SEED_TITLES = [
     "Diabetes",
@@ -45,8 +34,8 @@ BOT_USER_AGENT = "MedKGBot/1.0 (educational project; uses Wikipedia API)"
 HEADERS = {"User-Agent": BOT_USER_AGENT}
 
 MIN_WORDS = 500
-CRAWL_DELAY = 1.0          # wait 1 second between requests (be polite)
-DEFAULT_MAX_PER_SEED = 8   # max pages to save per starting article
+CRAWL_DELAY = 1.0
+DEFAULT_MAX_PER_SEED = 8
 
 SKIP_PREFIXES = (
     "Wikipedia:", "Talk:", "User:", "Help:", "Portal:",
@@ -63,16 +52,9 @@ MEDICAL_KEYWORDS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Wikipedia API helpers
-# ---------------------------------------------------------------------------
-
+# Download one Wikipedia article and return its text and metadata.
 def fetch_article(session: requests.Session, title: str) -> dict | None:
-    """
-    Download one Wikipedia article by title.
-    Returns a dict with url, title, text, word_count, timestamp.
-    Returns None if the article does not exist or is too short.
-    """
+    """Download one Wikipedia article. Returns None if missing or too short."""
     params = {
         "action": "query",
         "prop": "extracts|info",
@@ -120,11 +102,9 @@ def fetch_article(session: requests.Session, title: str) -> dict | None:
     }
 
 
+# Get outbound links from an article and filter to medical topics.
 def fetch_links(session: requests.Session, title: str, limit: int = 100) -> list[str]:
-    """
-    Get the list of links inside a Wikipedia article.
-    Returns only titles that look like medical topics.
-    """
+    """Return links inside a Wikipedia article that look like medical topics."""
     params = {
         "action": "query",
         "prop": "links",
@@ -162,20 +142,13 @@ def is_medical_title(title: str) -> bool:
     return any(kw in words for kw in MEDICAL_KEYWORDS)
 
 
-# ---------------------------------------------------------------------------
-# Core crawl logic
-# ---------------------------------------------------------------------------
-
+# BFS crawl from seed titles and write matching articles to JSONL.
 def crawl(
     seed_titles: list[str] = SEED_TITLES,
     output_file: str = "data/crawler_output.jsonl",
     max_per_seed: int = DEFAULT_MAX_PER_SEED,
 ) -> int:
-    """
-    Download medical Wikipedia articles and save them to a JSONL file.
-    Starts from seed_titles, then follows links to related articles.
-    Returns the number of pages saved.
-    """
+    """Download articles starting from seed_titles. Returns pages saved."""
     out_path = Path(output_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -187,7 +160,7 @@ def crawl(
 
     with open(out_path, "w", encoding="utf-8") as fout:
         for seed_title in seed_titles:
-            logger.info("=== Seed: %s ===", seed_title)
+            logger.info("Seed: %s", seed_title)
             queue = [seed_title]
             seed_count = 0
 
@@ -213,7 +186,6 @@ def crawl(
                     total_saved, record["title"], record["word_count"],
                 )
 
-                # Add links from this page to the queue
                 if seed_count < max_per_seed:
                     links = fetch_links(session, record["title"])
                     time.sleep(CRAWL_DELAY)
@@ -225,12 +197,8 @@ def crawl(
     return total_saved
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Medical Wikipedia Crawler (API) – Lab 1")
+    parser = argparse.ArgumentParser(description="Medical Wikipedia Crawler – Lab 1")
     parser.add_argument(
         "--output", default="data/crawler_output.jsonl",
         help="Path to output JSONL file (default: data/crawler_output.jsonl)",

@@ -1,12 +1,5 @@
-"""
-run_lab1.py – One-command runner for Lab 1
-==========================================
-Runs the crawler, then NER, then relation extraction in sequence.
-
-Usage:
-    python src/crawl/run_lab1.py                  # all three steps with defaults
-    python src/crawl/run_lab1.py --skip-crawl     # skip crawl, re-run NER + relations
-    python src/crawl/run_lab1.py --max-per-seed 5 # crawl with a smaller page count
+"""Lab 1 runner. Runs crawler → NER → relation extraction in sequence.
+Usage: python src/crawl/run_lab1.py [--skip-crawl] [--skip-ner] [--skip-relations]
 """
 
 import argparse
@@ -31,28 +24,28 @@ SPACY_MODEL = "en_core_web_trf"
 
 def step_crawl(max_per_seed: int) -> None:
     from crawler import crawl, SEED_TITLES
-    logger.info("=== STEP 1: Crawling ===")
+    logger.info("Step 1: Crawling")
     n = crawl(seed_titles=SEED_TITLES, output_file=CRAWLER_OUTPUT, max_per_seed=max_per_seed)
     print(f"  Crawler: {n} pages saved to {CRAWLER_OUTPUT}")
 
 
 def step_ner() -> None:
     from ner import run_ner
-    logger.info("=== STEP 2: NER ===")
+    logger.info("Step 2: NER")
     n = run_ner(input_file=CRAWLER_OUTPUT, output_file=NER_OUTPUT, model=SPACY_MODEL)
     print(f"  NER: {n} entities written to {NER_OUTPUT}")
 
 
 def step_relations() -> None:
     from relations import run_relations
-    logger.info("=== STEP 3: Relation Extraction ===")
+    logger.info("Step 3: Relation Extraction")
     n = run_relations(input_file=CRAWLER_OUTPUT, output_file=TRIPLES_OUTPUT, model=SPACY_MODEL)
     print(f"  Relations: {n} candidate triples written to {TRIPLES_OUTPUT}")
 
 
 def print_stats() -> None:
     """Print a summary of the output files."""
-    print("\n=== Lab 1 Output Summary ===")
+    print("\nLab 1 Output Summary")
     for path in [CRAWLER_OUTPUT, NER_OUTPUT, TRIPLES_OUTPUT]:
         p = Path(path)
         if p.exists():

@@ -1,47 +1,20 @@
-"""
-TD5 - Part 1: SWRL Reasoning with OWLReady2
+"""swrl_reasoning.py — SWRL reasoning with OWLReady2 on family.owl.
 Usage: python src/reason/swrl_reasoning.py
-
-Loads family.owl and runs OWL reasoning (HermiT or Pellet).
-Finds who becomes an OldPerson using this rule:
-    Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p)
 """
 
+import argparse
 import os
 import sys
 
-# ---------------------------------------------------------------------------
-# Resolve file paths relative to this script's location
-# ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OWL_FILE = os.path.join(SCRIPT_DIR, "family.owl")
 
-# ---------------------------------------------------------------------------
-# Import OWLReady2
-# ---------------------------------------------------------------------------
 try:
-    from owlready2 import (
-        get_ontology,
-        sync_reasoner_hermit,
-        sync_reasoner_pellet,
-        onto_path,
-        JAVA_EXE,
-    )
-    import owlready2
+    from owlready2 import get_ontology, sync_reasoner_hermit, sync_reasoner_pellet
 except ImportError:
     print("ERROR: owlready2 is not installed.")
     print("Install it with:  pip install owlready2")
     sys.exit(1)
-
-# ---------------------------------------------------------------------------
-# Helper
-# ---------------------------------------------------------------------------
-
-def print_section(title: str) -> None:
-    width = 60
-    print("\n" + "=" * width)
-    print(f"  {title}")
-    print("=" * width)
 
 
 def get_age(individual) -> int | None:
@@ -52,15 +25,8 @@ def get_age(individual) -> int | None:
     return None
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
 def main() -> None:
-    # ------------------------------------------------------------------
-    # 1. Load ontology
-    # ------------------------------------------------------------------
-    print_section("Loading family.owl")
+    print("\nLoading family.owl")
     if not os.path.isfile(OWL_FILE):
         print(f"ERROR: Cannot find {OWL_FILE}")
         sys.exit(1)
@@ -71,10 +37,7 @@ def main() -> None:
     print(f"Data properties : {[p.name for p in onto.data_properties()]}")
     print(f"Object properties: {[p.name for p in onto.object_properties()]}")
 
-    # ------------------------------------------------------------------
-    # 2. Inspect individuals BEFORE reasoning
-    # ------------------------------------------------------------------
-    print_section("Individuals BEFORE Reasoning")
+    print("\nIndividuals BEFORE Reasoning")
 
     individuals = list(onto.individuals())
     print(f"Total individuals: {len(individuals)}\n")
@@ -92,10 +55,7 @@ def main() -> None:
     print(f"\nPerson instances (before): {[i.name for i in Person_before]}")
     print(f"OldPerson instances (before): {[i.name for i in OldPerson_before]}")
 
-    # ------------------------------------------------------------------
-    # 3. Apply reasoner
-    # ------------------------------------------------------------------
-    print_section("Running Reasoner (HermiT -> Pellet fallback)")
+    print("\nRunning Reasoner (HermiT -> Pellet fallback)")
 
     reasoner_used = None
     with onto:
@@ -119,10 +79,7 @@ def main() -> None:
 
     print(f"\nReasoner used: {reasoner_used}")
 
-    # ------------------------------------------------------------------
-    # 4. Inspect individuals AFTER reasoning
-    # ------------------------------------------------------------------
-    print_section("Individuals AFTER Reasoning")
+    print("\nIndividuals AFTER Reasoning")
 
     individuals_after = list(onto.individuals())
     print(f"{'Name':<12} {'Classes':<45} {'Age'}")
@@ -132,10 +89,7 @@ def main() -> None:
         age = get_age(ind)
         print(f"{ind.name:<12} {str(classes):<45} {age}")
 
-    # ------------------------------------------------------------------
-    # 5. Summary
-    # ------------------------------------------------------------------
-    print_section("Summary")
+    print("\nSummary")
 
     Person_after = list(onto.Person.instances())
     OldPerson_after = list(onto.OldPerson.instances())
@@ -158,10 +112,7 @@ def main() -> None:
     else:
         print("\nNo new OldPerson inferences (check if SWRL support is active in your reasoner).")
 
-    # ------------------------------------------------------------------
-    # 6. SWRL rule display
-    # ------------------------------------------------------------------
-    print_section("SWRL Rule Applied")
+    print("\nSWRL Rule Applied")
     print("  Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p)")
     print()
     print("  Explanation:")
@@ -170,6 +121,7 @@ def main() -> None:
     print("  an OldPerson.")
 
 
+# Assert OldPerson for all Persons with age > 60 when no OWL reasoner is available.
 def _apply_rule_manually(onto) -> None:
     """Apply the SWRL rule by hand when no reasoner works."""
     print("Manually applying rule: Person(?p) ^ hasAge(?p, ?a) ^ swrlb:greaterThan(?a, 60) -> OldPerson(?p)")
@@ -187,27 +139,15 @@ def _apply_rule_manually(onto) -> None:
     print(f"Manual rule application: {count} new OldPerson assertions.")
 
 
-# ---------------------------------------------------------------------------
-# Part 2 — SWRL rule on the medical KB
-# ---------------------------------------------------------------------------
-
+# Apply the Disease-hasSymptom → affectedBy SWRL rule on the medical KB using rdflib.
 def run_medical_swrl() -> None:
-    """
-    Apply a SWRL rule on the medical KB:
-        Disease(?d) ^ hasSymptom(?d, ?s) -> affectedBy(?s, ?d)
-
-    This adds an 'affectedBy' triple for each 'hasSymptom' triple.
-    Done manually with rdflib (the medical KB is in NT/Turtle, not OWL/XML).
-    """
-    print("\n" + "=" * 60)
-    print("  SWRL Rule on Medical KB")
-    print("=" * 60)
+    """Apply Disease(?d) ^ hasSymptom(?d, ?s) -> affectedBy(?s, ?d) on the medical KB."""
+    print("\nSWRL Rule on Medical KB")
 
     RULE = "Disease(?d) ^ hasSymptom(?d, ?s) -> affectedBy(?s, ?d)"
     print(f"\n  Rule: {RULE}")
     print()
 
-    # Try to find the medical KB
     ROOT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
     candidates = [
         os.path.join(ROOT_DIR, "kg_artifacts", "medical_kb_expanded.nt"),
@@ -225,8 +165,7 @@ def run_medical_swrl() -> None:
         return
 
     try:
-        from rdflib import Graph, Namespace, URIRef
-        from rdflib.namespace import RDF, RDFS
+        from rdflib import Graph, Namespace
     except ImportError:
         print("  rdflib not installed. Run: pip install rdflib")
         return
@@ -240,7 +179,6 @@ def run_medical_swrl() -> None:
     hasSymptom = MED.hasSymptom
     affectedBy = MED.affectedBy
 
-    # Apply the rule
     new_triples = set()
     for d, _, s in g.triples((None, hasSymptom, None)):
         new_triples.add((s, affectedBy, d))
@@ -256,7 +194,6 @@ def run_medical_swrl() -> None:
 
 
 if __name__ == "__main__":
-    import argparse
     parser = argparse.ArgumentParser(description="SWRL Reasoning")
     parser.add_argument("--medical", action="store_true",
                         help="Also run the medical KB SWRL rule")
